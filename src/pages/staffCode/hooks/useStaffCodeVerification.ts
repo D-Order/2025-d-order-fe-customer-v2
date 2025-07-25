@@ -1,9 +1,12 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTE_CONSTANTS } from "@constants/RouteConstants";
-import { verifyStaffCode } from "../_api/StaffCodeAPI";
+//api연결주석처리
+//import { verifyStaffCode } from "../_api/StaffCodeAPI";
 import { StaffCodeInputRef } from "../_components/StaffCodeInput";
 
+//리팩토링을위해 api연결잠깐 끊어두기
+import { verifyStaffCode } from "../_dummy/StaffCodePageService";
 export const useStaffCodeVerification = () => {
   const navigate = useNavigate();
   const codeInputRef = useRef<StaffCodeInputRef>(null);

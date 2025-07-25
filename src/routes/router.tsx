@@ -6,7 +6,6 @@ import DefaultLayout from "@components/layout/DefaultLayout";
 import { ROUTE_CONSTANTS } from "@constants/RouteConstants";
 
 // pages
-import MainPage from "@pages/main/MainPage";
 import LoginPage from "@pages/login/LoginPage";
 import OrderListPage from "@pages/orderList/OrderListPage";
 import MenulistPage from "@pages/menulistpage/MenuListPage";
@@ -22,7 +21,7 @@ const LayoutWithAnalytics = ({ children }: { children: React.ReactNode }) => {
 
 const router = createBrowserRouter([
   {
-    path: ROUTE_CONSTANTS.HOME,
+    path: ROUTE_CONSTANTS.LOGIN,
     element: (
       <LayoutWithAnalytics>
         <DefaultLayout />
@@ -30,7 +29,6 @@ const router = createBrowserRouter([
     ),
     children: [
       { path: ROUTE_CONSTANTS.LOGIN, element: <LoginPage /> },
-      { path: ROUTE_CONSTANTS.MAIN, element: <MainPage /> },
       { path: ROUTE_CONSTANTS.ORDERLIST, element: <OrderListPage /> },
       { path: ROUTE_CONSTANTS.SHOPPINGCART, element: <ShoppingCartPage /> },
       { path: ROUTE_CONSTANTS.MENULIST, element: <MenulistPage /> },

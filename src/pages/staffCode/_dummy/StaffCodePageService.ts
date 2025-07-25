@@ -11,11 +11,11 @@ export interface VerifyCodeResponse {
   message?: string;
 }
 
-export interface TableInfoResponse {
+export interface TableOrderInfo {
   tableNumber: number;
-  numberOfPeople: number;
   totalPrice: number;
 }
+
 const STAFF_CODE = "1234"; // 직원 코드
 
 // 테이블 정보 더미 데이터
@@ -39,13 +39,13 @@ export const verifyStaffCode = async (code: string): Promise<boolean> => {
 };
 
 // 테이블 정보 가져오는 함수
-export const getTableInfo = async () => {
-  // API 연동 시 실제 호출로 교체
-  // return await apiClient.get('/table-info');
-
+export const getTableInfo = async (): Promise<TableOrderInfo> => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(TABLE_INFO);
+      resolve({
+        tableNumber: TABLE_INFO.tableNumber,
+        totalPrice: TABLE_INFO.totalPrice,
+      });
     }, 300);
   });
 };

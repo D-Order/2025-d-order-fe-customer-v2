@@ -10,10 +10,18 @@ import XIcon from "@assets/icons/xIcon.svg";
 import OrderInfo from "./_components/OrderInfo";
 import StaffCodeInput from "./_components/StaffCodeInput";
 import Loading from "@components/loading/Loading";
-// API 서비스 임포트
-import { fetchTableOrderInfo, TableOrderInfo } from "./_api/StaffCodeAPI";
+// API 서비스 임포트- 나중에 다시 살리기
+//import { fetchTableOrderInfo, TableOrderInfo } from "./_api/StaffCodeAPI";
 // 커스텀 훅 임포트
 import { useStaffCodeVerification } from "./hooks/useStaffCodeVerification";
+
+//1. 리팩토링 더미데이터로 변경 연결
+import { getTableInfo } from "./_dummy/StaffCodePageService";
+
+interface TableOrderInfo {
+  tableNumber: number;
+  totalPrice: number;
+} //2. 이거 나중에 api연결시 삭제
 
 const StaffCodePage = () => {
   const navigate = useNavigate();
@@ -34,7 +42,11 @@ const StaffCodePage = () => {
         setLoading(true);
         setError(null);
 
-        const info = await fetchTableOrderInfo();
+        //api연결나중에살리기
+        // const info = await fetchTableOrderInfo();
+
+        //3. 더미데이터연결
+        const info = await getTableInfo();
 
         if (!info) {
           setError(
@@ -43,7 +55,12 @@ const StaffCodePage = () => {
           return;
         }
 
-        setTableInfo(info);
+        //setTableInfo(info);
+        //4. 추후삭제 하기
+        setTableInfo({
+          tableNumber: info.tableNumber,
+          totalPrice: info.totalPrice,
+        });
       } catch (error) {
         setError("테이블 정보를 가져오는데 실패했습니다. 다시 시도해주세요.");
       } finally {
