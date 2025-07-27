@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ROUTE_CONSTANTS } from "@constants/RouteConstants";
 import { useShoppingCartStore } from "@stores/shoppingCartStore";
 import { ApiShopping } from "../_api/Api";
+import { accountInfoType } from "../types/types";
 
 const useShoppingCartPage = () => {
   const cart = useShoppingCartStore((state) => state.cart);
@@ -11,11 +12,7 @@ const useShoppingCartPage = () => {
   const increase = useShoppingCartStore((state) => state.increase);
   const decrease = useShoppingCartStore((state) => state.decrease);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [accountInfo, setAccountInfo] = useState<{
-    depositor: string;
-    bank: string;
-    account: string;
-  } | null>(null);
+  const [accountInfo, setAccountInfo] = useState<accountInfoType | null>(null);
   const navigate = useNavigate();
   const [isConfirmModal, setisConfirmModal] = useState<boolean>(false);
   const [isSendMoneyModal, setIsSendMoneyModal] = useState<boolean>(false);

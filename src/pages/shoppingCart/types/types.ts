@@ -1,8 +1,5 @@
-export interface ShoppingItemType {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  quantity: number;
-  inventory: number;
+export interface accountInfoType {
+  depositor: string;
+  bank: string;
+  account: string;
 }
