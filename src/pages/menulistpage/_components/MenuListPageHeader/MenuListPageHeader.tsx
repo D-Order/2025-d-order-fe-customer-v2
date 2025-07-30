@@ -5,8 +5,8 @@ import { MENULISTPAGE_CONSTANTS } from '../../_constants/menulistpageconstants';
 interface MenuListPageHeaderProps {
   title: string;
   tableNumber: number;
-  selectedCategory: 'tableFee' | 'menu' | 'drink';
-  onSelectCategory: (category: 'tableFee' | 'menu' | 'drink') => void;
+  selectedCategory: 'tableFee' | 'set' | 'menu' | 'drink';
+  onSelectCategory: (category: 'tableFee' | 'set' | 'menu' | 'drink') => void;
 }
 
 const MenuListPageHeader = ({
@@ -30,6 +30,12 @@ const MenuListPageHeader = ({
           className={selectedCategory === 'tableFee' ? 'selected' : ''}
         >
           {MENULISTPAGE_CONSTANTS.LISTPAGEHEADER.TEXT.TABELFEE}
+        </S.Category>
+        <S.Category
+          onClick={() => onSelectCategory('set')}
+          className={selectedCategory === 'set' ? 'selected' : ''}
+        >
+          {MENULISTPAGE_CONSTANTS.LISTPAGEHEADER.TEXT.SET}
         </S.Category>
         <S.Category
           onClick={() => onSelectCategory('menu')}

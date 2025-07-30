@@ -4,7 +4,7 @@ import MenuItem from '../Menu/MenuItem';
 
 import { MENULISTPAGE_CONSTANTS } from '../../_constants/menulistpageconstants';
 
-type Category = 'menu' | 'tableFee' | 'drink';
+type Category = 'menu' | 'set' | 'tableFee' | 'drink';
 
 interface MenuItemType {
   id: number;
@@ -18,6 +18,7 @@ interface MenuItemType {
 
 interface SectionRefsType {
   tableFee: React.RefObject<HTMLDivElement | null>;
+  set: React.RefObject<HTMLDivElement | null>;
   menu: React.RefObject<HTMLDivElement | null>;
   drink: React.RefObject<HTMLDivElement | null>;
 }
@@ -31,6 +32,7 @@ interface MenuListProps {
 
 const MenuList = ({ items, sectionRefs, onOpenModal }: MenuListProps) => {
   const tableFees = items.filter((item) => item.category === 'tableFee');
+  const sets = items.filter((item) => item.category === 'set');
   const menus = items.filter((item) => item.category === 'menu');
   const drinks = items.filter((item) => item.category === 'drink');
   return (
@@ -41,6 +43,17 @@ const MenuList = ({ items, sectionRefs, onOpenModal }: MenuListProps) => {
         </S.SectionTitle>
         <S.List>
           {tableFees.map((item) => (
+            <MenuItem key={item.id} item={item} onClick={onOpenModal} />
+          ))}
+        </S.List>
+      </S.Section>
+
+      <S.Section ref={sectionRefs.set}>
+        <S.SectionTitle>
+          {MENULISTPAGE_CONSTANTS.LISTPAGEHEADER.TEXT.SET}
+        </S.SectionTitle>
+        <S.List>
+          {sets.map((item) => (
             <MenuItem key={item.id} item={item} onClick={onOpenModal} />
           ))}
         </S.List>
