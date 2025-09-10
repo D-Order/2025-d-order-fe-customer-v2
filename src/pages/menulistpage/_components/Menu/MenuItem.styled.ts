@@ -15,6 +15,7 @@ export const Wrapper = styled.div<{ $soldout?: boolean; disabled?: boolean }>`
 
 export const Row = styled.div`
   display: flex;
+  align-items: center;
   flex-direction: row;
   gap: 1.5rem;
 `;
@@ -33,6 +34,13 @@ export const Col = styled.div`
   align-items: flex-start;
 `;
 
+export const Col2 = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+`;
+
 export const ItemName = styled.div`
   ${({ theme }) => theme.fonts.Bold14};
   color: ${({ theme }) => theme.colors.Black01};
@@ -48,4 +56,16 @@ export const ItemDes = styled.div<{ $soldout?: boolean; disabled?: boolean }>`
 export const ItemPrice = styled.div`
   ${({ theme }) => theme.fonts.Bold12};
   color: ${({ theme }) => theme.colors.Black01};
+`;
+
+export const ItemPrice_deco = styled.div`
+  ${({ theme }) => theme.fonts.SemiBold10};
+  color: ${({ theme }) => theme.colors.Black01};
+
+  text-decoration-line: line-through;
+`;
+
+export const Discount = styled.div`
+  ${({ theme }) => theme.fonts.Bold12};
+  color: ${({ theme }) => theme.colors.Orange01};
 `;
