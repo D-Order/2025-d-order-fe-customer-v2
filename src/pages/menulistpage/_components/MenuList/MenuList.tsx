@@ -35,6 +35,10 @@ const MenuList = ({ items, sectionRefs, onOpenModal }: MenuListProps) => {
   const sets = items.filter((item) => item.category === 'set');
   const menus = items.filter((item) => item.category === 'menu');
   const drinks = items.filter((item) => item.category === 'drink');
+
+  const keyOf = (it: MenuItemType, idx: number) =>
+    `${it.category}-${it.id ?? `idx-${idx}`}`;
+
   return (
     <S.Wrapper>
       <S.Section ref={sectionRefs.tableFee}>
@@ -42,8 +46,12 @@ const MenuList = ({ items, sectionRefs, onOpenModal }: MenuListProps) => {
           {MENULISTPAGE_CONSTANTS.LISTPAGEHEADER.TEXT.TABELFEE}
         </S.SectionTitle>
         <S.List>
-          {tableFees.map((item) => (
-            <MenuItem key={item.id} item={item} onClick={onOpenModal} />
+          {tableFees.map((item, idx) => (
+            <MenuItem
+              key={keyOf(item, idx)}
+              item={item}
+              onClick={onOpenModal}
+            />
           ))}
         </S.List>
       </S.Section>
@@ -53,8 +61,12 @@ const MenuList = ({ items, sectionRefs, onOpenModal }: MenuListProps) => {
           {MENULISTPAGE_CONSTANTS.LISTPAGEHEADER.TEXT.SET}
         </S.SectionTitle>
         <S.List>
-          {sets.map((item) => (
-            <MenuItem key={item.id} item={item} onClick={onOpenModal} />
+          {sets.map((item, idx) => (
+            <MenuItem
+              key={keyOf(item, idx)}
+              item={item}
+              onClick={onOpenModal}
+            />
           ))}
         </S.List>
       </S.Section>
@@ -64,8 +76,12 @@ const MenuList = ({ items, sectionRefs, onOpenModal }: MenuListProps) => {
           {MENULISTPAGE_CONSTANTS.LISTPAGEHEADER.TEXT.MENU}
         </S.SectionTitle>
         <S.List>
-          {menus.map((item) => (
-            <MenuItem key={item.id} item={item} onClick={onOpenModal} />
+          {menus.map((item, idx) => (
+            <MenuItem
+              key={keyOf(item, idx)}
+              item={item}
+              onClick={onOpenModal}
+            />
           ))}
         </S.List>
       </S.Section>
@@ -74,8 +90,8 @@ const MenuList = ({ items, sectionRefs, onOpenModal }: MenuListProps) => {
         <S.SectionTitle>
           {MENULISTPAGE_CONSTANTS.LISTPAGEHEADER.TEXT.BEVERAGE}
         </S.SectionTitle>
-        {drinks.map((item) => (
-          <MenuItem key={item.id} item={item} onClick={onOpenModal} />
+        {drinks.map((item, idx) => (
+          <MenuItem key={keyOf(item, idx)} item={item} onClick={onOpenModal} />
         ))}
       </S.Section>
     </S.Wrapper>

@@ -31,6 +31,9 @@ const MenuItem = ({ item, onClick }: MenuItemProps) => {
     if (isTableFeeAndSoldOut) return;
     onClick(item);
   };
+  const fmt = (v: unknown) =>
+    new Intl.NumberFormat('ko-KR').format(Number(v ?? 0));
+  const price = Number(item?.price ?? 0);
 
   return (
     <S.Wrapper
@@ -56,12 +59,12 @@ const MenuItem = ({ item, onClick }: MenuItemProps) => {
         <S.Row>
           <S.Discount>6.4%할인</S.Discount>
           <S.Col2>
-            <S.ItemPrice_deco>{item.price.toLocaleString()}원</S.ItemPrice_deco>
-            <S.ItemPrice>{item.price.toLocaleString()}원</S.ItemPrice>
+            <S.ItemPrice_deco>{fmt(price)}원</S.ItemPrice_deco>
+            <S.ItemPrice>{fmt(price)}원</S.ItemPrice>
           </S.Col2>
         </S.Row>
       ) : (
-        <S.ItemPrice>{item.price.toLocaleString()}원</S.ItemPrice>
+        <S.ItemPrice>{fmt(price)}원</S.ItemPrice>
       )}
     </S.Wrapper>
   );
