@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 export const Wrapper = styled.div`
+  position: relative;
   display: flex;
   justify-content: space-between;
   padding: 1rem;
@@ -38,4 +39,16 @@ export const Badge = styled.div`
   height: 6px;
   background-color: ${({ theme }) => theme.colors.Point};
   border-radius: 50%;
+`;
+
+export const Hochul = styled.div`
+  ${({ theme }) => theme.fonts.Medium12};
+  background-color: ${({ theme }) => theme.colors.Gray01};
+  display: flex;
+  border-radius: 0.375rem;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  align-items: center;
+
+  cursor: pointer;
 `;

@@ -3,7 +3,7 @@ import * as S from './MenuAssignModal.styled';
 import { MENULISTPAGE_CONSTANTS } from '../../../_constants/menulistpageconstants';
 
 interface MenuAssignModalProps {
-  item: { name: string; price: number; quantity: number };
+  item: { name: string; price: number; quantity: number; category: string };
   count: number;
   isMin: boolean;
   isMax: boolean;
@@ -27,6 +27,7 @@ const MenuAssignModal = ({
   onSubmit,
   isClosing,
 }: MenuAssignModalProps) => {
+  const isSetMenu = item.category === 'set';
   return (
     <S.Wrapper>
       <S.BackWrap onClick={onClose} />
@@ -37,10 +38,13 @@ const MenuAssignModal = ({
           <S.Row>
             <S.Col2>
               <S.Title>{item.name}</S.Title>
-              <S.Price>
-                {item.price.toLocaleString()}
-                {MENULISTPAGE_CONSTANTS.ASSIGNMODAL.TEXT.WON}
-              </S.Price>
+              <S.Row3>
+                <S.Price>
+                  {item.price.toLocaleString()}
+                  {MENULISTPAGE_CONSTANTS.ASSIGNMODAL.TEXT.WON}
+                </S.Price>
+                {isSetMenu && <S.Discount>6.4% 할인</S.Discount>}
+              </S.Row3>
             </S.Col2>
           </S.Row>
           <S.Row2>
