@@ -8,6 +8,7 @@ import { useShoppingCartStore } from '@stores/shoppingCartStore';
 // import { MenuListPageService } from '../_Dummy/MenuListPageService';
 import { MenuListService } from '../_services/MenuListService';
 import { CartService } from '../_services/CartService';
+import { BoothID } from '../_services/BoothID';
 
 const SCROLL_OFFSET = 120;
 
@@ -197,8 +198,8 @@ const useMenuListPage = () => {
         ];
 
         setMenuItems(allItems);
-        // (선택) 부스명은 별도 API/스토어에서 받는다면 여기서 setBoothName 호출
-        // setBoothName(boothNameFromElsewhere)
+        const boothName = await BoothID.getName(boothIdNumber);
+        setBoothName(boothName);
       } catch (e) {
         console.error(e);
         setMenuItems([]);
