@@ -20,12 +20,14 @@ export type ApiMenu = {
 };
 
 export type ApiSetMenu = {
-  setmenu_id: number;
-  setmenu_name: string;
-  setmenu_description: string;
-  setmenu_price: number;
-  setmenu_image: string | null;
+  booth_id: number;
   is_soldout: boolean;
+  origin_price: number;
+  set_name: string;
+  set_description: string;
+  set_image: string | null;
+  set_menu_id: number;
+  set_price: number;
   menu_items: { menu_id: number; quantity: number }[];
 };
 
@@ -46,6 +48,7 @@ export const MenuListService = {
     const res = await instance.get<BoothAllMenusResponse>(
       `/api/v2/booth/${boothId}/all-menus/`
     );
+    console.log(res);
     return res.data.data; // { booth_id, table, menus, setmenus }
   },
 };
