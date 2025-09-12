@@ -10,24 +10,28 @@ import ShoppingFooter from "./_components/ShoppingFooter";
 import ConfirmModal from "./_modal/ConfitmMotal";
 import SendMoneyModal from "./_modal/sendMoneyModal";
 import useShoppingCartPage from "./_hooks/useShoppingCartPage";
+import { useEffect, useState } from "react";
+import { Menu, SetMenu } from "./types/types";
 
 const ShoppingCartPage = () => {
   const navigate = useNavigate();
-
+  const [menus, setMenu] = useState<Menu[]>([]);
+  const [setMenus, setSetMenu] = useState<SetMenu[]>([]);
   const {
-    cart,
+    shoppingItemResponse,
     isConfirmModal,
     isSendMoneyModal,
     totalPrice,
-    deleteItem,
-    increase,
-    decrease,
+    // deleteItem,
+    // increase,
+    // decrease,
     CloseModal,
     CloseAcoountModal,
     Pay,
-    CheckShoppingItems,
+    // CheckShoppingItems,
     errorMessage,
     accountInfo,
+    FetchShoppingItems,
   } = useShoppingCartPage();
 
   // 계좌 복사 버튼
@@ -51,6 +55,18 @@ const ShoppingCartPage = () => {
     }
   };
 
+  useEffect(() => {
+    FetchShoppingItems();
+  }, []);
+
+  useEffect(() => {
+    if (shoppingItemResponse) {
+      console.log(shoppingItemResponse);
+      setMenu(shoppingItemResponse.data.cart.menus || []);
+      setSetMenu(shoppingItemResponse.data.cart.set_menus || []);
+    }
+  }, [shoppingItemResponse]);
+
   return (
     <Wrapper>
       <ShoppingHeader
@@ -60,7 +76,7 @@ const ShoppingCartPage = () => {
         }}
       />
 
-      {cart.length == 0 ? (
+      {menus.length === 0 ? (
         <ShoppingListEmpty>
           <img src={Character} alt="이미지" />
           <p>아직 장바구니에 담긴 메뉴가 없어요.</p>
@@ -68,19 +84,19 @@ const ShoppingCartPage = () => {
       ) : (
         <>
           <ShoppingListWrapper>
-            {cart.map((item) => (
+            {menus.map((item) => (
               <ShoppingItem
                 key={item.id}
                 item={item}
-                onIncrease={() => increase(item.id)}
-                onDecrease={() => decrease(item.id)}
-                deleteItem={() => deleteItem(item.id)}
+                onIncrease={() => {}} // 일단 빈 함수
+                onDecrease={() => {}} // 일단 빈 함수
+                deleteItem={() => {}} // 일단 빈 함수
               />
             ))}
           </ShoppingListWrapper>
           <ShoppingFooter
             totalPrice={totalPrice}
-            CheckShoppingItems={CheckShoppingItems}
+            CheckShoppingItems={() => {}} // 일단 빈 함수
           />
         </>
       )}
