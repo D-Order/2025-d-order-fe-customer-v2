@@ -9,6 +9,7 @@ type Category = 'menu' | 'tableFee' | 'set' | 'drink';
 interface ItemType {
   name: string;
   description: string;
+  originprice?: number;
   price: number;
   imageUrl: string;
   id: number;
@@ -55,11 +56,14 @@ const MenuItem = ({ item, onClick }: MenuItemProps) => {
           </S.ItemDes>
         </S.Col>
       </S.Row>
-      {isSetMenu ? (
+      {isSetMenu && item.originprice && item.originprice > price ? (
         <S.Row>
-          <S.Discount>6.4%할인</S.Discount>
+          <S.Discount>
+            {Math.round(((item.originprice - price) / item.originprice) * 100)}%
+            할인
+          </S.Discount>
           <S.Col2>
-            <S.ItemPrice_deco>{fmt(price)}원</S.ItemPrice_deco>
+            <S.ItemPrice_deco>{fmt(item.originprice)}원</S.ItemPrice_deco>
             <S.ItemPrice>{fmt(price)}원</S.ItemPrice>
           </S.Col2>
         </S.Row>

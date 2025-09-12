@@ -8,6 +8,7 @@ import { useShoppingCartStore } from '@stores/shoppingCartStore';
 // import { MenuListPageService } from '../_Dummy/MenuListPageService';
 import { MenuListService } from '../_services/MenuListService';
 import { CartService } from '../_services/CartService';
+import { BoothID } from '../_services/BoothID';
 
 const SCROLL_OFFSET = 120;
 
@@ -178,11 +179,12 @@ const useMenuListPage = () => {
 
         // 4) 세트 메뉴 매핑
         const mappedSets: SetMenuItem[] = (setmenus ?? []).map((s) => ({
-          id: s.setmenu_id,
-          name: s.setmenu_name,
-          description: s.setmenu_description,
-          price: s.setmenu_price,
-          imageUrl: s.setmenu_image ?? undefined,
+          id: s.set_menu_id,
+          name: s.set_name,
+          description: s.set_description,
+          originprice: s.origin_price,
+          price: s.set_price,
+          imageUrl: s.set_image ?? undefined,
           quantity: Number.MAX_SAFE_INTEGER, // 세트 수량 제한 없으면 충분히 크게
           soldOut: !!s.is_soldout,
           category: 'set',
@@ -196,8 +198,8 @@ const useMenuListPage = () => {
         ];
 
         setMenuItems(allItems);
-        // (선택) 부스명은 별도 API/스토어에서 받는다면 여기서 setBoothName 호출
-        // setBoothName(boothNameFromElsewhere)
+        const boothName = await BoothID.getName(boothIdNumber);
+        setBoothName(boothName);
       } catch (e) {
         console.error(e);
         setMenuItems([]);
