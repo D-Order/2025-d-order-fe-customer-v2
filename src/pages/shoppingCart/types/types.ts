@@ -1,7 +1,7 @@
 export interface accountInfoType {
-  depositor: string;
-  bank: string;
-  account: string;
+  account_holder: string;
+  bank_name: string;
+  account_number: string;
 }
 
 export interface Menu {

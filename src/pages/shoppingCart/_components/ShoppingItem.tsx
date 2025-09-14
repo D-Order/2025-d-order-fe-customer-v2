@@ -52,10 +52,10 @@ const ShoppingItem = ({
               <AmountText>{item.quantity}</AmountText>
               <button
                 onClick={onIncrease}
-                // disabled={item.quantity === item.inventory}
+                disabled={item.quantity === item.menu_amount}
               >
                 <img
-                // src={item.quantity === item.inventory ? PlusDisable : plus}
+                  src={item.quantity === item.menu_amount ? PlusDisable : plus}
                 />
               </button>
             </AmountWrapper>

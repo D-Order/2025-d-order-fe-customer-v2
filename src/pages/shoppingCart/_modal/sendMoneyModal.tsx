@@ -17,13 +17,17 @@ const SendMoneyModal = ({
   pay: () => void;
   copyAccount: (text: string) => void;
   totalPrice: number;
-  accountInfo: { depositor: string; bank: string; account: string } | null;
+  accountInfo: {
+    account_holder: string;
+    bank_name: string;
+    account_number: string;
+  };
 }) => {
   if (!accountInfo) return 1111;
 
   const account: TotalAccount = {
-    depositor: accountInfo.depositor,
-    account: `${accountInfo.bank} ${accountInfo.account}`,
+    depositor: accountInfo.account_holder,
+    account: `${accountInfo.bank_name} ${accountInfo.account_number}`,
     totalPrice,
   };
   return (

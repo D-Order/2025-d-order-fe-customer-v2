@@ -22,16 +22,17 @@ const ShoppingCartPage = () => {
     isConfirmModal,
     isSendMoneyModal,
     totalPrice,
-    // deleteItem,
-    // increase,
-    // decrease,
     CloseModal,
     CloseAcoountModal,
+    CheckAccount,
+    setIsSendMoneyModal,
     Pay,
-    // CheckShoppingItems,
     errorMessage,
     accountInfo,
     FetchShoppingItems,
+    increaseQuantity,
+    decreaseQuantity,
+    deleteItem,
   } = useShoppingCartPage();
 
   // 계좌 복사 버튼
@@ -88,15 +89,19 @@ const ShoppingCartPage = () => {
               <ShoppingItem
                 key={item.id}
                 item={item}
-                onIncrease={() => {}} // 일단 빈 함수
-                onDecrease={() => {}} // 일단 빈 함수
-                deleteItem={() => {}} // 일단 빈 함수
+                onIncrease={() => increaseQuantity(item.id)}
+                onDecrease={() => decreaseQuantity(item.id)}
+                deleteItem={() => deleteItem(item.id)}
               />
             ))}
           </ShoppingListWrapper>
           <ShoppingFooter
             totalPrice={totalPrice}
-            CheckShoppingItems={() => {}} // 일단 빈 함수
+            CheckShoppingItems={() => {
+              CheckAccount();
+              setIsSendMoneyModal(true);
+            }}
+            OpenCouponModal={() => {}}
           />
         </>
       )}
@@ -109,7 +114,7 @@ const ShoppingCartPage = () => {
           ></ConfirmModal>
         </DarkWrapper>
       )}
-      {isSendMoneyModal && (
+      {isSendMoneyModal && accountInfo && (
         <DarkWrapper>
           <SendMoneyModal
             canclePay={CloseAcoountModal}
