@@ -288,9 +288,9 @@ const useMenuListPage = () => {
     }
     if (count <= 0) return;
 
-    // ✅ type 매핑: set 은 'set', 나머지는 'menu'
-    const type: 'menu' | 'set' =
-      selectedItem.category === 'set' ? 'set' : 'menu';
+    // ✅ type 매핑: set → set_menu, 나머지는 menu
+    const type: 'menu' | 'set_menu' =
+      selectedItem.category === 'set' ? 'set_menu' : 'menu';
 
     try {
       // 🔗 장바구니 API 호출

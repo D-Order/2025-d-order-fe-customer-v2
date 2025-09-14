@@ -1,7 +1,7 @@
 // src/pages/MenuListPage/_services/CartService.ts
 import { instance } from '@services/instance';
 
-type CartType = 'menu' | 'set';
+type CartType = 'menu' | 'set_menu';
 
 export const CartService = {
   add: async ({
