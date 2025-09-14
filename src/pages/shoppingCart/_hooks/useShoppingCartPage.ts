@@ -15,7 +15,13 @@ const useShoppingCartPage = () => {
   const [isConfirmModal, setisConfirmModal] = useState<boolean>(false);
   const [isSendMoneyModal, setIsSendMoneyModal] = useState<boolean>(false);
 
+  const [isCouponModal, setIsCouponModal] = useState<boolean>(false);
   const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [originalPrice, setOriginalPrice] = useState<number>(0);
+  const [discountAmount, setDiscountAmount] = useState<number>(0);
+  const [discountType, setDiscountType] = useState<string>();
+  const [couponName, setCounponName] = useState<string>();
+  const [appliedCoupon, setAppliedCoupon] = useState<boolean>(false);
   const boothId = localStorage.getItem("boothId");
   const table_num = localStorage.getItem("tableNum");
 
@@ -170,8 +176,12 @@ const useShoppingCartPage = () => {
         },
       });
       setAccountInfo(response.data.data);
-    } catch (err) {
-      console.log(err);
+    } catch (err: any) {
+      const errorMessage =
+        err?.response?.data?.message ||
+        err?.message ||
+        "알 수 없는 오류가 발생했습니다.";
+      setErrorMessage(errorMessage);
     }
   };
 
@@ -189,6 +199,43 @@ const useShoppingCartPage = () => {
     navigate(ROUTE_CONSTANTS.STAFFCODE);
   };
 
+  // 쿠폰이 유효한지 확인
+  const CheckCoupon = async (code: string) => {
+    try {
+      const response = await instance.post(
+        "api/v2/cart/validate-coupon/",
+        {
+          coupon_code: code,
+        },
+        {
+          headers: {
+            "Booth-ID": boothId,
+          },
+        }
+      );
+
+      console.log("쿠폰 검증 성공:", response.data);
+
+      // 쿠폰 적용 성공 시 할인 정보 저장
+      if (response.data) {
+        console.log("실행함?");
+        setOriginalPrice(totalPrice);
+        setDiscountAmount(response.data.data.discount_value);
+        setDiscountType(response.data.data.discount_type);
+        setCounponName(response.data.data.coupon_name);
+        setAppliedCoupon(true);
+
+        // 상태 업데이트 후 확인
+        console.log("setAppliedCoupon(true) 호출 완료");
+      }
+
+      return response.data;
+    } catch (err: any) {
+      console.log("CheckCoupon 에러:", err);
+      throw new Error("해당 번호의 쿠폰이 존재하지 않아요!");
+    }
+  };
+
   // 총 주문금액 계산
   useEffect(() => {
     if (shoppingItemResponse?.data?.cart?.menus) {
@@ -196,6 +243,11 @@ const useShoppingCartPage = () => {
         shoppingItemResponse.data.cart.menus
       );
       setTotalPrice(calculatedTotal);
+
+      // 쿠폰이 적용되지 않은 상태에서는 원래 가격과 동일
+      if (!appliedCoupon) {
+        setOriginalPrice(calculatedTotal);
+      }
     }
   }, [shoppingItemResponse?.data?.cart?.menus]);
 
@@ -205,6 +257,11 @@ const useShoppingCartPage = () => {
     isSendMoneyModal,
     setIsSendMoneyModal,
     totalPrice,
+    originalPrice,
+    discountAmount,
+    appliedCoupon,
+    discountType,
+    couponName,
     CloseModal,
     CloseAcoountModal,
     Pay,
@@ -215,6 +272,9 @@ const useShoppingCartPage = () => {
     increaseQuantity,
     decreaseQuantity,
     deleteItem,
+    setIsCouponModal,
+    isCouponModal,
+    CheckCoupon,
   };
 };
 

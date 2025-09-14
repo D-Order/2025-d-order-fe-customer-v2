@@ -1,22 +1,40 @@
 import Btn from "@components/button/Btn";
+import { SetStateAction } from "react";
 import styled from "styled-components";
+
 const ShoppingFooter = ({
   totalPrice,
+  originalPrice,
+  discountAmount,
+  appliedCoupon,
   CheckShoppingItems,
-  OpenCouponModal,
+  setIsCouponModal,
 }: {
   totalPrice: number;
+  originalPrice: number;
+  discountAmount: number;
+  appliedCoupon: boolean;
   CheckShoppingItems: () => void;
-  OpenCouponModal: () => void;
+  setIsCouponModal: React.Dispatch<SetStateAction<boolean>>;
 }) => {
+  console.log(appliedCoupon);
   return (
     <Wrapper>
       <CouponWrapper>
-        <CouponBtn onClick={OpenCouponModal}>+ 쿠폰 사용</CouponBtn>
+        <CouponBtn onClick={() => setIsCouponModal(true)}>
+          + 쿠폰 사용
+        </CouponBtn>
       </CouponWrapper>
       <div style={{ justifyContent: "space-between" }}>
         <p id="totalPrice">💵 총 주문금액</p>
-        <PriceText>{totalPrice.toLocaleString("ko-KR")}원</PriceText>
+        <PriceContainer>
+          {appliedCoupon && (
+            <OriginalPrice>
+              {originalPrice.toLocaleString("ko-KR")}
+            </OriginalPrice>
+          )}
+          <PriceText>{totalPrice.toLocaleString("ko-KR")}원</PriceText>
+        </PriceContainer>
       </div>
       <div style={{ justifyContent: "center" }}>
         <Btn text="주문하기" onClick={CheckShoppingItems} />
@@ -70,6 +88,19 @@ const CouponBtn = styled.button`
   ${({ theme }) => theme.fonts.Bold16};
 
   border-radius: 50px;
+`;
+
+const PriceContainer = styled.div`
+  display: flex;
+  flex-direction: column !important;
+  align-items: flex-end;
+  gap: 4px;
+`;
+
+const OriginalPrice = styled.p`
+  color: #999;
+  ${({ theme }) => theme.fonts.Medium14};
+  text-decoration: line-through;
 `;
 
 const PriceText = styled.p`

@@ -12,6 +12,7 @@ import SendMoneyModal from "./_modal/sendMoneyModal";
 import useShoppingCartPage from "./_hooks/useShoppingCartPage";
 import { useEffect, useState } from "react";
 import { Menu, SetMenu } from "./types/types";
+import CouponModal from "./_modal/CouponModal";
 
 const ShoppingCartPage = () => {
   const navigate = useNavigate();
@@ -22,6 +23,9 @@ const ShoppingCartPage = () => {
     isConfirmModal,
     isSendMoneyModal,
     totalPrice,
+    originalPrice,
+    discountAmount,
+    appliedCoupon,
     CloseModal,
     CloseAcoountModal,
     CheckAccount,
@@ -33,6 +37,8 @@ const ShoppingCartPage = () => {
     increaseQuantity,
     decreaseQuantity,
     deleteItem,
+    setIsCouponModal,
+    isCouponModal,
   } = useShoppingCartPage();
 
   // 계좌 복사 버튼
@@ -62,7 +68,6 @@ const ShoppingCartPage = () => {
 
   useEffect(() => {
     if (shoppingItemResponse) {
-      console.log(shoppingItemResponse);
       setMenu(shoppingItemResponse.data.cart.menus || []);
       setSetMenu(shoppingItemResponse.data.cart.set_menus || []);
     }
@@ -97,11 +102,14 @@ const ShoppingCartPage = () => {
           </ShoppingListWrapper>
           <ShoppingFooter
             totalPrice={totalPrice}
+            originalPrice={originalPrice}
+            discountAmount={discountAmount}
+            appliedCoupon={appliedCoupon}
             CheckShoppingItems={() => {
               CheckAccount();
               setIsSendMoneyModal(true);
             }}
-            OpenCouponModal={() => {}}
+            setIsCouponModal={setIsCouponModal}
           />
         </>
       )}
@@ -123,6 +131,11 @@ const ShoppingCartPage = () => {
             totalPrice={totalPrice}
             accountInfo={accountInfo}
           />
+        </DarkWrapper>
+      )}
+      {isCouponModal && (
+        <DarkWrapper>
+          <CouponModal onClose={() => setIsCouponModal(false)} />
         </DarkWrapper>
       )}
     </Wrapper>

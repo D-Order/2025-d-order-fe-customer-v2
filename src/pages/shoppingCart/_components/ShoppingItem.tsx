@@ -21,7 +21,6 @@ const ShoppingItem = ({
   onDecrease,
   deleteItem,
 }: ShoppingListProps) => {
-  console.log(item);
   return (
     <>
       <ShoppingItemWrapper>
