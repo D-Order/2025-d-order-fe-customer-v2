@@ -1,8 +1,34 @@
-export interface ShoppingItemType {
+export interface accountInfoType {
+  account_holder: string;
+  bank_name: string;
+  account_number: string;
+}
+
+export interface Menu {
   id: number;
-  name: string;
-  price: number;
-  image: string;
+  is_soldout: boolean;
+  menu_amount: number;
+  menu_image?: string;
+  menu_name: string;
+  menu_price: number;
   quantity: number;
-  inventory: number;
+}
+
+export interface SetMenu {}
+
+export interface ShoppingItemDataType {
+  booth_id: number;
+  id: number;
+  menus?: Menu[];
+  set_menus?: SetMenu[];
+  table_num: number;
+}
+
+export interface ShoppingItemResponseType {
+  data: {
+    cart: ShoppingItemDataType;
+    subtotal: number;
+    table_fee: number;
+    total_price: number;
+  };
 }

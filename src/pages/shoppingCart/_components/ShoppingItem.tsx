@@ -5,11 +5,11 @@ import PlusDisable from "@assets/icons/PlusDisavle.svg";
 import minus from "@assets/icons/minus.svg";
 import minusDisavle from "@assets/icons/minusDisable.svg";
 import Line from "@assets/images/Line3.svg";
-import { ShoppingItemType } from "../types/types";
+import { Menu } from "../types/types";
 import { IMAGE_CONSTANTS } from "@constants/ImageConstants";
 
 interface ShoppingListProps {
-  item: ShoppingItemType;
+  item: Menu;
   onIncrease: () => void;
   onDecrease: () => void;
   deleteItem: () => void;
@@ -21,26 +21,27 @@ const ShoppingItem = ({
   onDecrease,
   deleteItem,
 }: ShoppingListProps) => {
+  console.log(item);
   return (
     <>
       <ShoppingItemWrapper>
         <ImgWrapper>
-          {item.image ? (
-            <img src={item.image} alt="선택한 음식 사진" />
+          {item.menu_image ? (
+            <img src={item.menu_image} alt="선택한 음식 사진" />
           ) : (
             <img src={IMAGE_CONSTANTS.CHARACTER} alt="기본 사진" />
           )}
         </ImgWrapper>
         <div className="itemContainer">
           <div className="contentWrapper">
-            <ItemText>{item.name}</ItemText>
+            <ItemText>{item.menu_name}</ItemText>
             <button onClick={deleteItem}>
               <img src={close} alt="장바구니에서 지우기 버튼" />
             </button>
           </div>
 
           <div className="contentWrapper">
-            <PriceText>{item.price.toLocaleString("ko-KR")}원</PriceText>
+            <PriceText>{item.menu_price.toLocaleString("ko-KR")}원</PriceText>
             <AmountWrapper>
               <button onClick={onDecrease} disabled={item.quantity === 1}>
                 <img
@@ -51,10 +52,10 @@ const ShoppingItem = ({
               <AmountText>{item.quantity}</AmountText>
               <button
                 onClick={onIncrease}
-                disabled={item.quantity === item.inventory}
+                disabled={item.quantity === item.menu_amount}
               >
                 <img
-                  src={item.quantity === item.inventory ? PlusDisable : plus}
+                  src={item.quantity === item.menu_amount ? PlusDisable : plus}
                 />
               </button>
             </AmountWrapper>
