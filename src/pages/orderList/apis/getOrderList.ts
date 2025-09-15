@@ -1,38 +1,65 @@
 import axios from "axios";
-
 const baseURL = import.meta.env.VITE_BASE_URL;
+export type OrderStatus = "pending" | "accepted" | "rejected" | "completed";
 
-export interface OrderItem {
+export type MenuOrderItem = {
+  type: "menu";
   id: number;
-  cart_id: number;
+  order_id: number;
   menu_id: number;
   menu_name: string;
-  menu_image: string | null;
   menu_price: number;
-  menu_num: number;
-  order_status: string;
+  fixed_price: number;
+  quantity: number;
+  status: OrderStatus;       
   created_at: string;
+  updated_at: string;
+  order_amount: number;
+  table_num: number;
+  menu_image: string | null;
+  menu_category: string;     
+};
+
+export type SetMenuOrderItem = {
+  type: "setmenu";
+  id: number;
+  order_id: number;
+  set_id: number;
+  set_name: string;
+  set_price: number;
+  fixed_price: number;
+  quantity: number;
+  status: OrderStatus;
+  created_at: string;
+  updated_at: string;
+  order_amount: number;
+  table_num: number;
+  set_image: string | null;
+};
+
+export type RawOrderItem = MenuOrderItem | SetMenuOrderItem;
+
+export interface OrderListData {
+  order_amount: number;       
+  orders: RawOrderItem[];   
 }
 
 export interface OrderListResponse {
-  status: string;
-  message: string;
-  code: number;
-  total_price?: number;
-  data?: OrderItem[];
+  status: "success" | "error";
+  code: number;           
+  data?: OrderListData;
+  message?: string;
 }
 
-// ✅ boothId와 tableId를 헤더에 포함하여 요청
 export const getOrderList = async (
-  tableId: number,
+  tableNum: number,
   boothId: number
 ): Promise<OrderListResponse> => {
-  const response = await axios.get(`${baseURL}/api/tables/orders/`, {
+  const res = await axios.get(`${baseURL}api/v2/tables/${tableNum}/orders/`, {
     headers: {
-      "X-Booth-Id": boothId,
-      "X-Table-Number": tableId,
+      "Booth-ID": boothId,
+      "Content-Type": "application/json",
     },
   });
-
-  return response.data;
+  return res.data;
 };
