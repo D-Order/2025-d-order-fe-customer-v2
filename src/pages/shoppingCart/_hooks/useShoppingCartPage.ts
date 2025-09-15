@@ -22,6 +22,9 @@ const useShoppingCartPage = () => {
   const [discountType, setDiscountType] = useState<string>();
   const [couponName, setCounponName] = useState<string>();
   const [appliedCoupon, setAppliedCoupon] = useState<boolean>(false);
+  const [appliedCouponCode, setAppliedCouponCode] = useState<string | null>(
+    null
+  );
   const boothId = localStorage.getItem("boothId");
   const table_num = localStorage.getItem("tableNum");
 
@@ -227,8 +230,11 @@ const useShoppingCartPage = () => {
 
   // 계좌 페이지 이동
   const Pay = () => {
+    const search = appliedCouponCode
+      ? `?coupon=${encodeURIComponent(appliedCouponCode)}`
+      : "";
     setIsSendMoneyModal(false);
-    navigate(ROUTE_CONSTANTS.STAFFCODE);
+    navigate(`${ROUTE_CONSTANTS.STAFFCODE}${search}`);
   };
 
   // 쿠폰이 유효한지 확인
@@ -252,6 +258,7 @@ const useShoppingCartPage = () => {
         setDiscountType(response.data.data.discount_type);
         setCounponName(response.data.data.coupon_name);
         setAppliedCoupon(true);
+        setAppliedCouponCode(code); // 사용자가 입력한 코드 그대로 저장
       }
 
       return response.data;
@@ -310,6 +317,7 @@ const useShoppingCartPage = () => {
     isCouponModal,
     CheckCoupon,
     setAppliedCoupon,
+    appliedCouponCode,
   };
 };
 
