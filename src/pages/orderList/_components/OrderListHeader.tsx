@@ -4,7 +4,7 @@ import * as S from "../OrderListPage.styled";
 const OrderListHeader = ({
   text,
   goBack,
-  totalPrice, // ✅ 총 금액 추가
+  totalPrice, 
 }: {
   text: string;
   goBack: () => void;
@@ -21,7 +21,7 @@ const OrderListHeader = ({
       </S.Header>
       <S.TotalWrapper>
         <S.TotalPrice>💵 총 주문금액</S.TotalPrice>
-        <S.PriceText>{totalPrice.toLocaleString()}원</S.PriceText> {/* ✅ 동적 표시 */}
+        <S.PriceText>{totalPrice.toLocaleString()}원</S.PriceText>
       </S.TotalWrapper>
     </>
   );
