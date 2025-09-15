@@ -11,17 +11,20 @@ import ConfirmModal from "./_modal/ConfitmMotal";
 import SendMoneyModal from "./_modal/sendMoneyModal";
 import useShoppingCartPage from "./_hooks/useShoppingCartPage";
 import { useEffect, useState } from "react";
-import { Menu, SetMenu } from "./types/types";
+import { Menu } from "./types/types";
+import CouponModal from "./_modal/CouponModal";
 
 const ShoppingCartPage = () => {
   const navigate = useNavigate();
   const [menus, setMenu] = useState<Menu[]>([]);
-  const [setMenus, setSetMenu] = useState<SetMenu[]>([]);
+  const [setMenus, setSetMenu] = useState<Menu[]>([]);
   const {
     shoppingItemResponse,
     isConfirmModal,
     isSendMoneyModal,
     totalPrice,
+    originalPrice,
+    appliedCoupon,
     CloseModal,
     CloseAcoountModal,
     CheckAccount,
@@ -33,6 +36,10 @@ const ShoppingCartPage = () => {
     increaseQuantity,
     decreaseQuantity,
     deleteItem,
+    setIsCouponModal,
+    isCouponModal,
+    CheckCoupon,
+    setAppliedCoupon,
   } = useShoppingCartPage();
 
   // 계좌 복사 버튼
@@ -62,7 +69,6 @@ const ShoppingCartPage = () => {
 
   useEffect(() => {
     if (shoppingItemResponse) {
-      console.log(shoppingItemResponse);
       setMenu(shoppingItemResponse.data.cart.menus || []);
       setSetMenu(shoppingItemResponse.data.cart.set_menus || []);
     }
@@ -77,7 +83,7 @@ const ShoppingCartPage = () => {
         }}
       />
 
-      {menus.length === 0 ? (
+      {menus.length === 0 && setMenus.length === 0 ? (
         <ShoppingListEmpty>
           <img src={Character} alt="이미지" />
           <p>아직 장바구니에 담긴 메뉴가 없어요.</p>
@@ -94,14 +100,25 @@ const ShoppingCartPage = () => {
                 deleteItem={() => deleteItem(item.id)}
               />
             ))}
+            {setMenus.map((item) => (
+              <ShoppingItem
+                key={item.id}
+                item={item}
+                onIncrease={() => increaseQuantity(item.id)}
+                onDecrease={() => decreaseQuantity(item.id)}
+                deleteItem={() => deleteItem(item.id)}
+              />
+            ))}
           </ShoppingListWrapper>
           <ShoppingFooter
             totalPrice={totalPrice}
+            originalPrice={originalPrice}
+            appliedCoupon={appliedCoupon}
             CheckShoppingItems={() => {
               CheckAccount();
               setIsSendMoneyModal(true);
             }}
-            OpenCouponModal={() => {}}
+            setIsCouponModal={setIsCouponModal}
           />
         </>
       )}
@@ -122,6 +139,16 @@ const ShoppingCartPage = () => {
             copyAccount={(text: string) => CopyAccount(text)}
             totalPrice={totalPrice}
             accountInfo={accountInfo}
+          />
+        </DarkWrapper>
+      )}
+      {isCouponModal && (
+        <DarkWrapper>
+          <CouponModal
+            onClose={() => setIsCouponModal(false)}
+            CheckCoupon={CheckCoupon}
+            appliedCoupon={appliedCoupon}
+            setAppliedCoupon={setAppliedCoupon}
           />
         </DarkWrapper>
       )}

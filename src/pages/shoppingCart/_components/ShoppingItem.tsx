@@ -21,13 +21,12 @@ const ShoppingItem = ({
   onDecrease,
   deleteItem,
 }: ShoppingListProps) => {
-  console.log(item);
   return (
     <>
       <ShoppingItemWrapper>
         <ImgWrapper>
           {item.menu_image ? (
-            <img src={item.menu_image} alt="선택한 음식 사진" />
+            <img src={`${item.menu_image}`} alt="선택한 음식 사진" />
           ) : (
             <img src={IMAGE_CONSTANTS.CHARACTER} alt="기본 사진" />
           )}
