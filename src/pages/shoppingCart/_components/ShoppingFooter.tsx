@@ -5,14 +5,12 @@ import styled from "styled-components";
 const ShoppingFooter = ({
   totalPrice,
   originalPrice,
-  discountAmount,
   appliedCoupon,
   CheckShoppingItems,
   setIsCouponModal,
 }: {
   totalPrice: number;
   originalPrice: number;
-  discountAmount: number;
   appliedCoupon: boolean;
   CheckShoppingItems: () => void;
   setIsCouponModal: React.Dispatch<SetStateAction<boolean>>;

@@ -24,7 +24,6 @@ const ShoppingCartPage = () => {
     isSendMoneyModal,
     totalPrice,
     originalPrice,
-    discountAmount,
     appliedCoupon,
     CloseModal,
     CloseAcoountModal,
@@ -39,6 +38,8 @@ const ShoppingCartPage = () => {
     deleteItem,
     setIsCouponModal,
     isCouponModal,
+    CheckCoupon,
+    setAppliedCoupon,
   } = useShoppingCartPage();
 
   // 계좌 복사 버튼
@@ -112,7 +113,6 @@ const ShoppingCartPage = () => {
           <ShoppingFooter
             totalPrice={totalPrice}
             originalPrice={originalPrice}
-            discountAmount={discountAmount}
             appliedCoupon={appliedCoupon}
             CheckShoppingItems={() => {
               CheckAccount();
@@ -144,7 +144,12 @@ const ShoppingCartPage = () => {
       )}
       {isCouponModal && (
         <DarkWrapper>
-          <CouponModal onClose={() => setIsCouponModal(false)} />
+          <CouponModal
+            onClose={() => setIsCouponModal(false)}
+            CheckCoupon={CheckCoupon}
+            appliedCoupon={appliedCoupon}
+            setAppliedCoupon={setAppliedCoupon}
+          />
         </DarkWrapper>
       )}
     </Wrapper>

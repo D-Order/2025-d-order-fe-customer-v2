@@ -1,16 +1,22 @@
 import styled from "styled-components";
-import { useState } from "react";
+import React, { SetStateAction, useState } from "react";
 import { toast } from "react-toastify";
 import { IMAGE_CONSTANTS } from "@constants/ImageConstants";
-import useShoppingCartPage from "../_hooks/useShoppingCartPage";
 
 interface CouponModalProps {
   onClose: () => void;
+  CheckCoupon: (code: string) => Promise<any>;
+  appliedCoupon: boolean;
+  setAppliedCoupon: React.Dispatch<SetStateAction<boolean>>;
 }
 
-const CouponModal = ({ onClose }: CouponModalProps) => {
+const CouponModal = ({
+  onClose,
+  CheckCoupon,
+  appliedCoupon,
+  setAppliedCoupon,
+}: CouponModalProps) => {
   const [couponCode, setCouponCode] = useState("");
-  const { CheckCoupon } = useShoppingCartPage();
   const handleApply = async () => {
     if (!couponCode.trim()) return;
 
@@ -48,6 +54,27 @@ const CouponModal = ({ onClose }: CouponModalProps) => {
             placeholder="쿠폰 번호 입력"
           />
         </InputContainer>
+        {appliedCoupon && (
+          <CouponContainer>
+            <SubTitle>현재 적용된 쿠폰</SubTitle>
+            <CouponWraper>
+              <img
+                src={IMAGE_CONSTANTS.COUPONICON}
+                alt="쿠폰 이미지"
+                id="coupon"
+              />
+              <div>
+                첫주문5000원 할인
+                <img
+                  src={IMAGE_CONSTANTS.XICON}
+                  alt="쿠폰 적용 취소하기"
+                  id="close"
+                  onClick={() => setAppliedCoupon(false)}
+                />
+              </div>
+            </CouponWraper>
+          </CouponContainer>
+        )}
       </ModalContainer>
       <ButtonContainer>
         <CancelButton onClick={onClose}>취소</CancelButton>
@@ -103,6 +130,44 @@ const CouponInput = styled.input`
   &:focus {
     outline: none;
     border-color: ${({ theme }) => theme.colors.Black02};
+  }
+`;
+
+const CouponContainer = styled.section`
+  display: flex;
+  flex-direction: column;
+`;
+
+const SubTitle = styled.p`
+  ${({ theme }) => theme.fonts.SemiBold10};
+  color: ${({ theme }) => theme.colors.Black01};
+`;
+
+const CouponWraper = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid ${({ theme }) => theme.colors.Orange01};
+  width: 100%;
+  ${({ theme }) => theme.fonts.SemiBold10}
+  box-sizing: border-box;
+  border-radius: 4px;
+  padding: 4px;
+  margin-top: 4px;
+  div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+  }
+  #coupon {
+    width: 32px;
+    padding: 8px 0;
+  }
+  #close {
+    cursor: pointer;
   }
 `;
 

@@ -37,7 +37,6 @@ const useShoppingCartPage = () => {
         },
       });
       const data = response.data;
-      console.log("장바구니 조회", data);
       setShoppingItemResponse(data);
     } catch (err) {
       console.log(err);
@@ -45,14 +44,15 @@ const useShoppingCartPage = () => {
   };
 
   // 총 주문금액 계산 함수
-  const calculateTotalPrice = (menus: any[], setMenus?: Menu[]) => {
-    console.log("dddd", menus);
-    const menusTotal = (menus || []).reduce((total, item) => {
-      return total + item.menu_price * item.quantity;
-    }, 0);
-    const setMenusTotal = (setMenus || []).reduce((total, item) => {
-      return total + item.menu_price * item.quantity;
-    }, 0);
+  const calculateTotalPrice = (menus?: Menu[], setMenus?: Menu[]) => {
+    const menusTotal = (Array.isArray(menus) ? menus : []).reduce(
+      (total, item) => total + item.menu_price * item.quantity,
+      0
+    );
+    const setMenusTotal = (Array.isArray(setMenus) ? setMenus : []).reduce(
+      (total, item) => total + item.menu_price * item.quantity,
+      0
+    );
     return menusTotal + setMenusTotal;
   };
 
@@ -77,7 +77,7 @@ const useShoppingCartPage = () => {
     type: "menu" | "set_menu"
   ) => {
     try {
-      const response = await instance.patch(
+      await instance.patch(
         `api/v2/cart/menu/`,
         {
           table_num,
@@ -91,8 +91,6 @@ const useShoppingCartPage = () => {
           },
         }
       );
-      const data = response.data;
-      console.log("수량 변경", data);
     } catch (err) {
       console.log(err);
     }
@@ -248,19 +246,12 @@ const useShoppingCartPage = () => {
         }
       );
 
-      console.log("쿠폰 검증 성공:", response.data);
-
-      // 쿠폰 적용 성공 시 할인 정보 저장
       if (response.data) {
-        console.log("실행함?");
         setOriginalPrice(totalPrice);
         setDiscountAmount(response.data.data.discount_value);
         setDiscountType(response.data.data.discount_type);
         setCounponName(response.data.data.coupon_name);
         setAppliedCoupon(true);
-
-        // 상태 업데이트 후 확인
-        console.log("setAppliedCoupon(true) 호출 완료");
       }
 
       return response.data;
@@ -270,24 +261,29 @@ const useShoppingCartPage = () => {
     }
   };
 
-  // 총 주문금액 계산
   useEffect(() => {
     if (!shoppingItemResponse) return;
+    const cart = shoppingItemResponse.data?.cart;
+    const base = calculateTotalPrice(cart?.menus, cart?.set_menus);
+    setOriginalPrice(base);
+  }, [shoppingItemResponse]);
 
-    if (
-      shoppingItemResponse.data.cart.menus ||
-      shoppingItemResponse.data.cart.set_menus
-    ) {
-      console.log("주문금액", shoppingItemResponse);
-      const calculatedTotal = calculateTotalPrice(shoppingItemResponse);
-      setTotalPrice(calculatedTotal);
-
-      // 쿠폰이 적용되지 않은 상태에서는 원래 가격과 동일
-      if (!appliedCoupon) {
-        setOriginalPrice(calculatedTotal);
-      }
+  useEffect(() => {
+    if (!appliedCoupon) {
+      setTotalPrice(originalPrice);
+      return;
     }
-  }, [shoppingItemResponse?.data?.cart?.menus]);
+    if (discountType === "percent") {
+      const discounted = Math.max(
+        0,
+        Math.floor(originalPrice * (1 - discountAmount / 100))
+      );
+      setTotalPrice(discounted);
+    } else {
+      const discounted = Math.max(0, originalPrice - discountAmount);
+      setTotalPrice(discounted);
+    }
+  }, [originalPrice, appliedCoupon, discountType, discountAmount]);
 
   return {
     shoppingItemResponse,
@@ -313,6 +309,7 @@ const useShoppingCartPage = () => {
     setIsCouponModal,
     isCouponModal,
     CheckCoupon,
+    setAppliedCoupon,
   };
 };
 
