@@ -14,13 +14,11 @@ export interface Menu {
   quantity: number;
 }
 
-export interface SetMenu {}
-
 export interface ShoppingItemDataType {
   booth_id: number;
   id: number;
   menus?: Menu[];
-  set_menus?: SetMenu[];
+  set_menus?: Menu[];
   table_num: number;
 }
 

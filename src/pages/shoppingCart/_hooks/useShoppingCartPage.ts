@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTE_CONSTANTS } from "@constants/RouteConstants";
-import { accountInfoType } from "../types/types";
+import { accountInfoType, Menu } from "../types/types";
 import { instance } from "@services/instance";
 import { ShoppingItemResponseType } from "../types/types";
 
@@ -45,21 +45,43 @@ const useShoppingCartPage = () => {
   };
 
   // 총 주문금액 계산 함수
-  const calculateTotalPrice = (menus: any[]) => {
-    if (!menus || menus.length === 0) return 0;
-    return menus.reduce((total, item) => {
+  const calculateTotalPrice = (menus: any[], setMenus?: Menu[]) => {
+    console.log("dddd", menus);
+    const menusTotal = (menus || []).reduce((total, item) => {
       return total + item.menu_price * item.quantity;
     }, 0);
+    const setMenusTotal = (setMenus || []).reduce((total, item) => {
+      return total + item.menu_price * item.quantity;
+    }, 0);
+    return menusTotal + setMenusTotal;
   };
 
-  // 상품 수량 변경
-  const patchMenuShoppingItem = async (id: number, quantity: number) => {
+  // 공통: 메뉴/세트 구분
+  const getItemContext = (
+    id: number
+  ): { type: "menu" | "set_menu"; currentItem: Menu | undefined } => {
+    const currentMenu = shoppingItemResponse?.data?.cart?.menus?.find(
+      (item) => item.id === id
+    );
+    const currentSet = shoppingItemResponse?.data?.cart?.set_menus?.find(
+      (item: Menu) => item.id === id
+    );
+    if (currentSet) return { type: "set_menu", currentItem: currentSet };
+    return { type: "menu", currentItem: currentMenu };
+  };
+
+  // 공통: 수량 변경 API 호출
+  const patchShoppingItem = async (
+    id: number,
+    quantity: number,
+    type: "menu" | "set_menu"
+  ) => {
     try {
       const response = await instance.patch(
         `api/v2/cart/menu/`,
         {
           table_num,
-          type: "menu",
+          type,
           id,
           quantity,
         },
@@ -78,76 +100,21 @@ const useShoppingCartPage = () => {
 
   // 수량 증가
   const increaseQuantity = async (id: number) => {
-    if (!shoppingItemResponse?.data?.cart?.menus) return;
+    if (!shoppingItemResponse?.data?.cart) return;
 
-    const currentItem = shoppingItemResponse.data.cart.menus.find(
-      (item) => item.id === id
-    );
-    if (currentItem) {
-      const newQuantity = currentItem.quantity + 1;
+    const { type, currentItem } = getItemContext(id);
+    if (!currentItem) return;
 
-      setShoppingItemResponse((prev) => {
-        if (!prev) return prev;
-        const updatedMenus =
-          prev.data.cart.menus?.map((item) =>
-            item.id === id ? { ...item, quantity: newQuantity } : item
-          ) || [];
+    const newQuantity = currentItem.quantity + 1;
 
-        return {
-          ...prev,
-          data: {
-            ...prev.data,
-            cart: {
-              ...prev.data.cart,
-              menus: updatedMenus,
-            },
-          },
-        };
-      });
-
-      patchMenuShoppingItem(id, newQuantity);
-    }
-  };
-
-  // 수량 감소
-  const decreaseQuantity = async (id: number) => {
-    if (!shoppingItemResponse?.data?.cart?.menus) return;
-
-    const currentItem = shoppingItemResponse.data.cart.menus.find(
-      (item) => item.id === id
-    );
-    if (currentItem && currentItem.quantity > 1) {
-      const newQuantity = currentItem.quantity - 1;
-
-      setShoppingItemResponse((prev) => {
-        if (!prev) return prev;
-        const updatedMenus =
-          prev.data.cart.menus?.map((item) =>
-            item.id === id ? { ...item, quantity: newQuantity } : item
-          ) || [];
-
-        return {
-          ...prev,
-          data: {
-            ...prev.data,
-            cart: {
-              ...prev.data.cart,
-              menus: updatedMenus,
-            },
-          },
-        };
-      });
-
-      patchMenuShoppingItem(id, newQuantity);
-    }
-  };
-
-  // 상품 삭제
-  const deleteItem = async (id: number) => {
     setShoppingItemResponse((prev) => {
       if (!prev) return prev;
-      const updatedMenus =
-        prev.data.cart.menus?.filter((item) => item.id !== id) || [];
+      const updatedMenus = (prev.data.cart.menus || []).map((item) =>
+        item.id === id ? { ...item, quantity: newQuantity } : item
+      );
+      const updatedSets = (prev.data.cart.set_menus || []).map((item: Menu) =>
+        item.id === id ? { ...item, quantity: newQuantity } : item
+      );
 
       return {
         ...prev,
@@ -155,13 +122,80 @@ const useShoppingCartPage = () => {
           ...prev.data,
           cart: {
             ...prev.data.cart,
-            menus: updatedMenus,
+            menus: type === "menu" ? updatedMenus : prev.data.cart.menus,
+            set_menus:
+              type === "set_menu" ? updatedSets : prev.data.cart.set_menus,
           },
         },
       };
     });
 
-    patchMenuShoppingItem(id, 0);
+    patchShoppingItem(id, newQuantity, type);
+  };
+
+  // 수량 감소
+  const decreaseQuantity = async (id: number) => {
+    if (!shoppingItemResponse?.data?.cart) return;
+
+    const { type, currentItem } = getItemContext(id);
+    if (!currentItem || currentItem.quantity <= 1) return;
+
+    const newQuantity = currentItem.quantity - 1;
+
+    setShoppingItemResponse((prev) => {
+      if (!prev) return prev;
+      const updatedMenus = (prev.data.cart.menus || []).map((item) =>
+        item.id === id ? { ...item, quantity: newQuantity } : item
+      );
+      const updatedSets = (prev.data.cart.set_menus || []).map((item: Menu) =>
+        item.id === id ? { ...item, quantity: newQuantity } : item
+      );
+
+      return {
+        ...prev,
+        data: {
+          ...prev.data,
+          cart: {
+            ...prev.data.cart,
+            menus: type === "menu" ? updatedMenus : prev.data.cart.menus,
+            set_menus:
+              type === "set_menu" ? updatedSets : prev.data.cart.set_menus,
+          },
+        },
+      };
+    });
+
+    patchShoppingItem(id, newQuantity, type);
+  };
+
+  // 상품 삭제
+  const deleteItem = async (id: number) => {
+    const { type } = getItemContext(id);
+
+    setShoppingItemResponse((prev) => {
+      if (!prev) return prev;
+      const updatedMenus = (prev.data.cart.menus || []).filter(
+        (item) => item.id !== id
+      );
+      const updatedSets = (prev.data.cart.set_menus || []).filter(
+        (item: Menu) => item.id !== id
+      );
+
+      return {
+        ...prev,
+        data: {
+          ...prev.data,
+          cart: {
+            ...prev.data.cart,
+            menus: type === "menu" ? updatedMenus : prev.data.cart.menus,
+            set_menus:
+              type === "set_menu" ? updatedSets : prev.data.cart.set_menus,
+          },
+        },
+      };
+    });
+
+    patchShoppingItem(id, 0, type);
   };
 
   //계좌 정보 관리
@@ -238,10 +272,14 @@ const useShoppingCartPage = () => {
 
   // 총 주문금액 계산
   useEffect(() => {
-    if (shoppingItemResponse?.data?.cart?.menus) {
-      const calculatedTotal = calculateTotalPrice(
-        shoppingItemResponse.data.cart.menus
-      );
+    if (!shoppingItemResponse) return;
+
+    if (
+      shoppingItemResponse.data.cart.menus ||
+      shoppingItemResponse.data.cart.set_menus
+    ) {
+      console.log("주문금액", shoppingItemResponse);
+      const calculatedTotal = calculateTotalPrice(shoppingItemResponse);
       setTotalPrice(calculatedTotal);
 
       // 쿠폰이 적용되지 않은 상태에서는 원래 가격과 동일
