@@ -1,74 +1,76 @@
-import axios, {
-  AxiosError,
-  AxiosInstance,
-  InternalAxiosRequestConfig,
-} from "axios";
+import { AxiosError } from "axios";
 
-// 테이블 번호와 부스 ID를 헤더에 포함하는 인스턴스 생성
-const table_num = localStorage.getItem("tableNum");
-const booth_id = localStorage.getItem("boothId");
-
-export const staffCodeApi: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-    "X-Booth-Id": booth_id,
-    "X-Table-Number": table_num,
-  },
-});
-
-staffCodeApi.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const boothId = localStorage.getItem("boothId");
-    const tableNum = localStorage.getItem("tableNum");
-
-    config.headers["X-Booth-Id"] = boothId || "";
-    config.headers["X-Table-Number"] = tableNum || "";
-
-    return config;
-  },
-  (error: AxiosError) => Promise.reject(error)
-);
+// @services/instance에서 미리 정의된 인스턴스를 불러와 사용
+import { instance } from "@services/instance";
 
 // API 응답 타입 정의
-export interface OrderCheckResponse {
+export interface OrderCheckGetResponse {
   status: string;
   message: string;
   code: number;
   data: {
-    table_id: number;
-    table_num: number;
-    total_price: number;
+    order_amount: number;
+    seat_count: number;
   } | null;
 }
 
-// 직원 코드 검증 응답 타입
-export interface VerifyCodeResponse {
+// api주문생성에대한 응답타입
+export interface OrderCheckPostResponse {
   status: string;
-  message: string;
   code: number;
+  message: string;
   data: {
-    table_id: number;
-    table_num: number;
-    people_count: number;
-    total_price: number;
+    order_id: number;
+    order_amount: number;
+    subtotal: number;
+    table_fee: number;
+    coupon_discount: number;
+    coupon: string;
+    booth_total_revenues: number;
   } | null;
 }
 
-// 프론트엔드에서 사용하는 타입
+// 쿠폰 적용 후 'data' 객체의 상세 정보 타입
+export interface CouponDetails {
+  coupon_name: string;
+  discount_type: "percent" | "amount";
+  discount_value: number;
+  subtotal: number;
+  table_fee: number;
+  total_price_before: number;
+  total_price_after: number;
+}
+
+// 쿠폰 적용 API의 전체 응답 타입
+export interface CouponResponse {
+  status: string;
+  code: number;
+  data: CouponDetails | null;
+}
+
+// 프론트엔드에서 사용하는 직원확인페이지에서 받아와야되는 타입
 export interface TableOrderInfo {
-  tableNumber: number;
+  tableNumber: string;
+  seat_count: number;
   totalPrice: number;
 }
 
-// 직원 코드 검증 API
+// 직원 확인용 비밀번호입력 후 주문생성되는 post api
 export const verifyStaffCode = async (code: string): Promise<boolean> => {
   try {
-    // POST 요청으로 직원 코드 검증
-    const response = await staffCodeApi.post<VerifyCodeResponse>(
-      "/api/tables/order_check/",
+    const tableNum = localStorage.getItem("tableNum");
+    const boothId = localStorage.getItem("boothId");
+
+    const response = await instance.post<OrderCheckPostResponse>(
+      "/api/v2/tables/orders/order_check/",
       {
-        order_check_password: code,
+        password: code,
+        table_num: tableNum,
+      },
+      {
+        headers: {
+          "Booth-Id": boothId,
+        },
       }
     );
 
@@ -92,14 +94,26 @@ export const verifyStaffCode = async (code: string): Promise<boolean> => {
 // 테이블 주문 정보 확인 API
 export const fetchTableOrderInfo = async (): Promise<TableOrderInfo | null> => {
   try {
-    const response = await staffCodeApi.get<OrderCheckResponse>(
-      "/api/tables/order_check/"
-    );
+    const tableNum = localStorage.getItem("tableNum");
+    const boothId = localStorage.getItem("boothId");
 
+    const response = await instance.get<OrderCheckGetResponse>(
+      "/api/v2/tables/orders/order_check/",
+      {
+        params: {
+          table_num: tableNum,
+        },
+        headers: {
+          "Booth-Id": boothId,
+        },
+      }
+    );
+    console.log("API 응답:", response);
     if (response.data.status === "success" && response.data.data) {
       return {
-        tableNumber: response.data.data.table_num,
-        totalPrice: response.data.data.total_price,
+        tableNumber: tableNum || "",
+        totalPrice: response.data.data.order_amount,
+        seat_count: response.data.data.seat_count,
       };
     }
 
@@ -118,3 +132,42 @@ export const fetchTableOrderInfo = async (): Promise<TableOrderInfo | null> => {
     throw error;
   }
 };
+
+///쿠폰적용 장바구니에서 적용하기로함
+// export const applyCoupon = async (
+//   couponCode: string
+// ): Promise<CouponDetails | null> => {
+//   try {
+//     const tableNum = localStorage.getItem("tableNum");
+//     const boothId = localStorage.getItem("boothId");
+
+//     if (!tableNum || !boothId) {
+//       console.error(
+//         "applyCoupon: 'tableNum' 또는 'boothId'가 localStorage에 없습니다."
+//       );
+//       return null;
+//     }
+
+//     const response = await instance.post<CouponResponse>( // ✅ 변경된 타입 적용
+//       "/api/v2/cart/apply-coupon/",
+//       {
+//         coupon_code: couponCode,
+//         table_num: tableNum,
+//       },
+//       {
+//         headers: {
+//           "Booth-Id": boothId,
+//         },
+//       }
+//     );
+
+//     if (response.data.status === "success" && response.data.data) {
+//       return response.data.data;
+//     }
+
+//     return null;
+//   } catch (error: unknown) {
+//     console.error("쿠폰 적용에 실패했습니다:", error);
+//     throw error;
+//   }
+// };
