@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, { SetStateAction, useState } from "react";
+import React, { SetStateAction } from "react";
 import { toast } from "react-toastify";
 import { IMAGE_CONSTANTS } from "@constants/ImageConstants";
 
@@ -8,6 +8,8 @@ interface CouponModalProps {
   CheckCoupon: (code: string) => Promise<any>;
   appliedCoupon: boolean;
   setAppliedCoupon: React.Dispatch<SetStateAction<boolean>>;
+  couponCode: string;
+  setCouponCode: React.Dispatch<SetStateAction<string>>;
 }
 
 const CouponModal = ({
@@ -15,8 +17,9 @@ const CouponModal = ({
   CheckCoupon,
   appliedCoupon,
   setAppliedCoupon,
+  couponCode,
+  setCouponCode,
 }: CouponModalProps) => {
-  const [couponCode, setCouponCode] = useState("");
   const handleApply = async () => {
     if (!couponCode.trim()) return;
 

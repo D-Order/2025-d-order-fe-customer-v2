@@ -12,9 +12,10 @@ const SendMoneyModal = ({
   copyAccount,
   totalPrice,
   accountInfo,
+  couponCode,
 }: {
   canclePay: () => void;
-  pay: () => void;
+  pay: (code: string) => void;
   copyAccount: (text: string) => void;
   totalPrice: number;
   accountInfo: {
@@ -22,6 +23,7 @@ const SendMoneyModal = ({
     bank_name: string;
     account_number: string;
   };
+  couponCode: string;
 }) => {
   if (!accountInfo) return 1111;
 
@@ -58,8 +60,8 @@ const SendMoneyModal = ({
         </div>
       </ModalBody>
       <ModalConfirm>
-        <button onClick={canclePay}>취소</button>
-        <button onClick={pay}>직원 확인</button>
+        <button onClick={() => canclePay()}>취소</button>
+        <button onClick={() => pay(couponCode)}>직원 확인</button>
       </ModalConfirm>
     </ModalContainer>
   );

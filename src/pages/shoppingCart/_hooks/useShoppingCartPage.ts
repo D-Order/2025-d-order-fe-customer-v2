@@ -41,6 +41,7 @@ const useShoppingCartPage = () => {
       });
       const data = response.data;
       setShoppingItemResponse(data);
+      console.log("장바구니 담은 데이터", data);
     } catch (err) {
       console.log(err);
     }
@@ -216,6 +217,7 @@ const useShoppingCartPage = () => {
         err?.response?.data?.message ||
         err?.message ||
         "알 수 없는 오류가 발생했습니다.";
+      setisConfirmModal(true);
       setErrorMessage(errorMessage);
     }
   };
@@ -229,12 +231,28 @@ const useShoppingCartPage = () => {
   };
 
   // 계좌 페이지 이동
-  const Pay = () => {
-    const search = appliedCouponCode
-      ? `?coupon=${encodeURIComponent(appliedCouponCode)}`
-      : "";
-    setIsSendMoneyModal(false);
-    navigate(`${ROUTE_CONSTANTS.STAFFCODE}${search}`);
+  const Pay = async (code: string) => {
+    try {
+      await instance.post(
+        "api/v2/cart/apply-coupon/",
+        {
+          coupon_code: code,
+          table_num,
+        },
+        {
+          headers: {
+            "Booth-ID": boothId,
+          },
+        }
+      );
+      const search = appliedCouponCode
+        ? `?coupon=${encodeURIComponent(appliedCouponCode)}`
+        : "";
+      setIsSendMoneyModal(false);
+      navigate(`${ROUTE_CONSTANTS.STAFFCODE}${search}`);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   // 쿠폰이 유효한지 확인

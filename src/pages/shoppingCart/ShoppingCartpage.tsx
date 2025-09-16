@@ -18,6 +18,7 @@ const ShoppingCartPage = () => {
   const navigate = useNavigate();
   const [menus, setMenu] = useState<Menu[]>([]);
   const [setMenus, setSetMenu] = useState<Menu[]>([]);
+  const [couponCode, setCouponCode] = useState("");
   const {
     shoppingItemResponse,
     isConfirmModal,
@@ -139,6 +140,7 @@ const ShoppingCartPage = () => {
             copyAccount={(text: string) => CopyAccount(text)}
             totalPrice={totalPrice}
             accountInfo={accountInfo}
+            couponCode={couponCode}
           />
         </DarkWrapper>
       )}
@@ -149,6 +151,8 @@ const ShoppingCartPage = () => {
             CheckCoupon={CheckCoupon}
             appliedCoupon={appliedCoupon}
             setAppliedCoupon={setAppliedCoupon}
+            couponCode={couponCode}
+            setCouponCode={setCouponCode}
           />
         </DarkWrapper>
       )}
