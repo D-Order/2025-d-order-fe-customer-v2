@@ -1,33 +1,45 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { ROUTE_CONSTANTS } from "@constants/RouteConstants";
+import { IMAGE_CONSTANTS } from "@constants/ImageConstants";
+import { toast } from "react-toastify";
 import ShoppingHeader from "./_components/ShoppingHeader";
 import Character from "@assets/images/character.svg";
 import ShoppingItem from "./_components/ShoppingItem";
 import ShoppingFooter from "./_components/ShoppingFooter";
 import ConfirmModal from "./_modal/ConfitmMotal";
 import SendMoneyModal from "./_modal/sendMoneyModal";
-import { ROUTE_CONSTANTS } from "@constants/RouteConstants";
-import { toast } from "react-toastify";
-import { IMAGE_CONSTANTS } from "@constants/ImageConstants";
 import useShoppingCartPage from "./_hooks/useShoppingCartPage";
+import { useEffect, useState } from "react";
+import { Menu } from "./types/types";
+import CouponModal from "./_modal/CouponModal";
 
 const ShoppingCartPage = () => {
   const navigate = useNavigate();
-
+  const [menus, setMenu] = useState<Menu[]>([]);
+  const [setMenus, setSetMenu] = useState<Menu[]>([]);
   const {
-    cart,
+    shoppingItemResponse,
     isConfirmModal,
     isSendMoneyModal,
     totalPrice,
-    deleteItem,
-    increase,
-    decrease,
+    originalPrice,
+    appliedCoupon,
     CloseModal,
     CloseAcoountModal,
+    CheckAccount,
+    setIsSendMoneyModal,
     Pay,
-    CheckShoppingItems,
     errorMessage,
     accountInfo,
+    FetchShoppingItems,
+    increaseQuantity,
+    decreaseQuantity,
+    deleteItem,
+    setIsCouponModal,
+    isCouponModal,
+    CheckCoupon,
+    setAppliedCoupon,
   } = useShoppingCartPage();
 
   // 계좌 복사 버튼
@@ -51,6 +63,17 @@ const ShoppingCartPage = () => {
     }
   };
 
+  useEffect(() => {
+    FetchShoppingItems();
+  }, []);
+
+  useEffect(() => {
+    if (shoppingItemResponse) {
+      setMenu(shoppingItemResponse.data.cart.menus || []);
+      setSetMenu(shoppingItemResponse.data.cart.set_menus || []);
+    }
+  }, [shoppingItemResponse]);
+
   return (
     <Wrapper>
       <ShoppingHeader
@@ -60,7 +83,7 @@ const ShoppingCartPage = () => {
         }}
       />
 
-      {cart.length == 0 ? (
+      {menus.length === 0 && setMenus.length === 0 ? (
         <ShoppingListEmpty>
           <img src={Character} alt="이미지" />
           <p>아직 장바구니에 담긴 메뉴가 없어요.</p>
@@ -68,19 +91,34 @@ const ShoppingCartPage = () => {
       ) : (
         <>
           <ShoppingListWrapper>
-            {cart.map((item) => (
+            {menus.map((item) => (
               <ShoppingItem
                 key={item.id}
                 item={item}
-                onIncrease={() => increase(item.id)}
-                onDecrease={() => decrease(item.id)}
+                onIncrease={() => increaseQuantity(item.id)}
+                onDecrease={() => decreaseQuantity(item.id)}
+                deleteItem={() => deleteItem(item.id)}
+              />
+            ))}
+            {setMenus.map((item) => (
+              <ShoppingItem
+                key={item.id}
+                item={item}
+                onIncrease={() => increaseQuantity(item.id)}
+                onDecrease={() => decreaseQuantity(item.id)}
                 deleteItem={() => deleteItem(item.id)}
               />
             ))}
           </ShoppingListWrapper>
           <ShoppingFooter
             totalPrice={totalPrice}
-            CheckShoppingItems={CheckShoppingItems}
+            originalPrice={originalPrice}
+            appliedCoupon={appliedCoupon}
+            CheckShoppingItems={() => {
+              CheckAccount();
+              setIsSendMoneyModal(true);
+            }}
+            setIsCouponModal={setIsCouponModal}
           />
         </>
       )}
@@ -93,7 +131,7 @@ const ShoppingCartPage = () => {
           ></ConfirmModal>
         </DarkWrapper>
       )}
-      {isSendMoneyModal && (
+      {isSendMoneyModal && accountInfo && (
         <DarkWrapper>
           <SendMoneyModal
             canclePay={CloseAcoountModal}
@@ -101,6 +139,16 @@ const ShoppingCartPage = () => {
             copyAccount={(text: string) => CopyAccount(text)}
             totalPrice={totalPrice}
             accountInfo={accountInfo}
+          />
+        </DarkWrapper>
+      )}
+      {isCouponModal && (
+        <DarkWrapper>
+          <CouponModal
+            onClose={() => setIsCouponModal(false)}
+            CheckCoupon={CheckCoupon}
+            appliedCoupon={appliedCoupon}
+            setAppliedCoupon={setAppliedCoupon}
           />
         </DarkWrapper>
       )}

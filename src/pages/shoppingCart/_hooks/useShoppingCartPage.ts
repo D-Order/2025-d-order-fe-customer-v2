@@ -1,61 +1,223 @@
-import { useEffect } from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTE_CONSTANTS } from "@constants/RouteConstants";
-import { useShoppingCartStore } from "@stores/shoppingCartStore";
-import { ApiShopping } from "../_api/Api";
+import { accountInfoType, Menu } from "../types/types";
+import { instance } from "@services/instance";
+import { ShoppingItemResponseType } from "../types/types";
 
 const useShoppingCartPage = () => {
-  const cart = useShoppingCartStore((state) => state.cart);
-  const deleteItem = useShoppingCartStore((state) => state.deleteItem);
-  const increase = useShoppingCartStore((state) => state.increase);
-  const decrease = useShoppingCartStore((state) => state.decrease);
+  const [shoppingItemResponse, setShoppingItemResponse] = useState<
+    ShoppingItemResponseType | undefined
+  >();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [accountInfo, setAccountInfo] = useState<{
-    depositor: string;
-    bank: string;
-    account: string;
-  } | null>(null);
+  const [accountInfo, setAccountInfo] = useState<accountInfoType | null>(null);
   const navigate = useNavigate();
   const [isConfirmModal, setisConfirmModal] = useState<boolean>(false);
   const [isSendMoneyModal, setIsSendMoneyModal] = useState<boolean>(false);
 
+  const [isCouponModal, setIsCouponModal] = useState<boolean>(false);
   const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [originalPrice, setOriginalPrice] = useState<number>(0);
+  const [discountAmount, setDiscountAmount] = useState<number>(0);
+  const [discountType, setDiscountType] = useState<string>();
+  const [couponName, setCounponName] = useState<string>();
+  const [appliedCoupon, setAppliedCoupon] = useState<boolean>(false);
+  const [appliedCouponCode, setAppliedCouponCode] = useState<string | null>(
+    null
+  );
+  const boothId = localStorage.getItem("boothId");
+  const table_num = localStorage.getItem("tableNum");
 
-  // 상품 주문 관리
-  const CheckShoppingItems = async () => {
-    const data = {
-      items: cart.map((item) => ({
-        menu_id: item.id,
-        menu_num: item.quantity,
-      })),
-    };
+  // 장바구니 조회
+  const FetchShoppingItems = async () => {
     try {
-      const response = await ApiShopping.post("/api/order/confirm/", data);
-      if (response) {
-        await CheckAccount();
-        setIsSendMoneyModal(true);
-      }
-    } catch (err: any) {
-      setIsSendMoneyModal(false);
-      let message =
-        err?.response?.data?.message ||
-        err?.message ||
-        "알 수 없는 오류가 발생했어요.";
-      if (message === "첫 주문에는 테이블 이용료를 반드시 포함해야 합니다.") {
-        message = "테이블 이용료 주문이 필요해요!";
-      }
-      setErrorMessage(message);
-      setisConfirmModal(true);
+      const response = await instance.get("api/v2/cart/detail", {
+        headers: {
+          "Booth-ID": boothId,
+        },
+        params: {
+          table_num,
+        },
+      });
+      const data = response.data;
+      setShoppingItemResponse(data);
+    } catch (err) {
+      console.log(err);
     }
+  };
+
+  // 총 주문금액 계산 함수
+  const calculateTotalPrice = (menus?: Menu[], setMenus?: Menu[]) => {
+    const menusTotal = (Array.isArray(menus) ? menus : []).reduce(
+      (total, item) => total + item.menu_price * item.quantity,
+      0
+    );
+    const setMenusTotal = (Array.isArray(setMenus) ? setMenus : []).reduce(
+      (total, item) => total + item.menu_price * item.quantity,
+      0
+    );
+    return menusTotal + setMenusTotal;
+  };
+
+  // 공통: 메뉴/세트 구분
+  const getItemContext = (
+    id: number
+  ): { type: "menu" | "set_menu"; currentItem: Menu | undefined } => {
+    const currentMenu = shoppingItemResponse?.data?.cart?.menus?.find(
+      (item) => item.id === id
+    );
+    const currentSet = shoppingItemResponse?.data?.cart?.set_menus?.find(
+      (item: Menu) => item.id === id
+    );
+    if (currentSet) return { type: "set_menu", currentItem: currentSet };
+    return { type: "menu", currentItem: currentMenu };
+  };
+
+  // 공통: 수량 변경 API 호출
+  const patchShoppingItem = async (
+    id: number,
+    quantity: number,
+    type: "menu" | "set_menu"
+  ) => {
+    try {
+      await instance.patch(
+        `api/v2/cart/menu/`,
+        {
+          table_num,
+          type,
+          id,
+          quantity,
+        },
+        {
+          headers: {
+            "Booth-ID": boothId,
+          },
+        }
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // 수량 증가
+  const increaseQuantity = async (id: number) => {
+    if (!shoppingItemResponse?.data?.cart) return;
+
+    const { type, currentItem } = getItemContext(id);
+    if (!currentItem) return;
+
+    const newQuantity = currentItem.quantity + 1;
+
+    setShoppingItemResponse((prev) => {
+      if (!prev) return prev;
+      const updatedMenus = (prev.data.cart.menus || []).map((item) =>
+        item.id === id ? { ...item, quantity: newQuantity } : item
+      );
+      const updatedSets = (prev.data.cart.set_menus || []).map((item: Menu) =>
+        item.id === id ? { ...item, quantity: newQuantity } : item
+      );
+
+      return {
+        ...prev,
+        data: {
+          ...prev.data,
+          cart: {
+            ...prev.data.cart,
+            menus: type === "menu" ? updatedMenus : prev.data.cart.menus,
+            set_menus:
+              type === "set_menu" ? updatedSets : prev.data.cart.set_menus,
+          },
+        },
+      };
+    });
+
+    patchShoppingItem(id, newQuantity, type);
+  };
+
+  // 수량 감소
+  const decreaseQuantity = async (id: number) => {
+    if (!shoppingItemResponse?.data?.cart) return;
+
+    const { type, currentItem } = getItemContext(id);
+    if (!currentItem || currentItem.quantity <= 1) return;
+
+    const newQuantity = currentItem.quantity - 1;
+
+    setShoppingItemResponse((prev) => {
+      if (!prev) return prev;
+      const updatedMenus = (prev.data.cart.menus || []).map((item) =>
+        item.id === id ? { ...item, quantity: newQuantity } : item
+      );
+      const updatedSets = (prev.data.cart.set_menus || []).map((item: Menu) =>
+        item.id === id ? { ...item, quantity: newQuantity } : item
+      );
+
+      return {
+        ...prev,
+        data: {
+          ...prev.data,
+          cart: {
+            ...prev.data.cart,
+            menus: type === "menu" ? updatedMenus : prev.data.cart.menus,
+            set_menus:
+              type === "set_menu" ? updatedSets : prev.data.cart.set_menus,
+          },
+        },
+      };
+    });
+
+    patchShoppingItem(id, newQuantity, type);
+  };
+
+  // 상품 삭제
+  const deleteItem = async (id: number) => {
+    const { type } = getItemContext(id);
+
+    setShoppingItemResponse((prev) => {
+      if (!prev) return prev;
+      const updatedMenus = (prev.data.cart.menus || []).filter(
+        (item) => item.id !== id
+      );
+      const updatedSets = (prev.data.cart.set_menus || []).filter(
+        (item: Menu) => item.id !== id
+      );
+
+      return {
+        ...prev,
+        data: {
+          ...prev.data,
+          cart: {
+            ...prev.data.cart,
+            menus: type === "menu" ? updatedMenus : prev.data.cart.menus,
+            set_menus:
+              type === "set_menu" ? updatedSets : prev.data.cart.set_menus,
+          },
+        },
+      };
+    });
+
+    patchShoppingItem(id, 0, type);
   };
 
   //계좌 정보 관리
   const CheckAccount = async () => {
     try {
-      const response = await ApiShopping.get("/api/cart/payment-info/");
+      const response = await instance.get("api/v2/cart/payment-info/", {
+        headers: {
+          "Booth-ID": boothId,
+        },
+        params: {
+          table_num,
+        },
+      });
       setAccountInfo(response.data.data);
-    } catch (err) {}
+    } catch (err: any) {
+      const errorMessage =
+        err?.response?.data?.message ||
+        err?.message ||
+        "알 수 없는 오류가 발생했습니다.";
+      setErrorMessage(errorMessage);
+    }
   };
 
   // 상품 모달 관리
@@ -68,38 +230,94 @@ const useShoppingCartPage = () => {
 
   // 계좌 페이지 이동
   const Pay = () => {
+    const search = appliedCouponCode
+      ? `?coupon=${encodeURIComponent(appliedCouponCode)}`
+      : "";
     setIsSendMoneyModal(false);
-    navigate(ROUTE_CONSTANTS.STAFFCODE);
+    navigate(`${ROUTE_CONSTANTS.STAFFCODE}${search}`);
   };
 
-  // 가격 계산 함수
+  // 쿠폰이 유효한지 확인
+  const CheckCoupon = async (code: string) => {
+    try {
+      const response = await instance.post(
+        "api/v2/cart/validate-coupon/",
+        {
+          coupon_code: code,
+        },
+        {
+          headers: {
+            "Booth-ID": boothId,
+          },
+        }
+      );
+
+      if (response.data) {
+        setOriginalPrice(totalPrice);
+        setDiscountAmount(response.data.data.discount_value);
+        setDiscountType(response.data.data.discount_type);
+        setCounponName(response.data.data.coupon_name);
+        setAppliedCoupon(true);
+        setAppliedCouponCode(code); // 사용자가 입력한 코드 그대로 저장
+      }
+
+      return response.data;
+    } catch (err: any) {
+      console.log("CheckCoupon 에러:", err);
+      throw new Error("해당 번호의 쿠폰이 존재하지 않아요!");
+    }
+  };
+
   useEffect(() => {
-    if (!cart) {
-      setTotalPrice(0);
+    if (!shoppingItemResponse) return;
+    const cart = shoppingItemResponse.data?.cart;
+    const base = calculateTotalPrice(cart?.menus, cart?.set_menus);
+    setOriginalPrice(base);
+  }, [shoppingItemResponse]);
+
+  useEffect(() => {
+    if (!appliedCoupon) {
+      setTotalPrice(originalPrice);
       return;
     }
-    const total = cart.reduce(
-      (acc, item) => acc + item.price * item.quantity,
-      0
-    );
-    setTotalPrice(total);
-  }, [cart]);
+    if (discountType === "percent") {
+      const discounted = Math.max(
+        0,
+        Math.floor(originalPrice * (1 - discountAmount / 100))
+      );
+      setTotalPrice(discounted);
+    } else {
+      const discounted = Math.max(0, originalPrice - discountAmount);
+      setTotalPrice(discounted);
+    }
+  }, [originalPrice, appliedCoupon, discountType, discountAmount]);
 
   return {
-    cart,
+    shoppingItemResponse,
     isConfirmModal,
     isSendMoneyModal,
+    setIsSendMoneyModal,
     totalPrice,
-    deleteItem,
-    increase,
-    decrease,
+    originalPrice,
+    discountAmount,
+    appliedCoupon,
+    discountType,
+    couponName,
     CloseModal,
     CloseAcoountModal,
     Pay,
-    CheckShoppingItems,
     errorMessage,
     CheckAccount,
     accountInfo,
+    FetchShoppingItems,
+    increaseQuantity,
+    decreaseQuantity,
+    deleteItem,
+    setIsCouponModal,
+    isCouponModal,
+    CheckCoupon,
+    setAppliedCoupon,
+    appliedCouponCode,
   };
 };
 

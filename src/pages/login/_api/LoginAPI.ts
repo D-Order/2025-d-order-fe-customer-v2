@@ -1,39 +1,42 @@
 import axios from "axios";
 
 // 부스 이름 API 응답 타입
-export interface BoothNameResponse {
-  status: string;
+export interface BoothNameResponseV2 {
+  status: number;
   message: string;
   code: number;
   data: {
     booth_id: number;
     booth_name: string;
-    table_num: number;
   };
 }
 
-// 부스 이름과 테이블 개수 반환 타입
-export interface BoothInfo {
-  boothName: string;
-  tableCount: number;
+// 테이블 입장 API 응답 타입
+export interface TableEnterResponse {
+  status: string;
+  message: string;
+  code: number;
+  data: {
+    table_num: number;
+    booth_id: number;
+    booth_name: string;
+    table_status: string;
+  };
 }
 
 // 부스 이름 가져오기
-export const fetchBoothName = async (boothId: string): Promise<BoothInfo> => {
+export const fetchBoothName = async (boothId: string): Promise<string> => {
   try {
-    // 문자열 부스 ID를 숫자로 변환
     const numericBoothId = parseInt(boothId, 10);
 
-    // 숫자가 아니면 에러 처리
-    if (isNaN(numericBoothId)) {
-      return { boothName: "", tableCount: 0 };
+    if (isNaN(numericBoothId) || numericBoothId <= 0) {
+      return "부스 이름";
     }
 
-    // GET 요청으로 부스 ID를 booth_id라는 쿼리 파라미터로 전달 (숫자 형태로)
-    const response = await axios.get<BoothNameResponse>(
+    const response = await axios.get<BoothNameResponseV2>(
       `${
         import.meta.env.VITE_BASE_URL
-      }/api/manager/booth-name?booth_id=${numericBoothId}`,
+      }api/v2/booth/tables/name/?booth_id=${numericBoothId}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -42,20 +45,48 @@ export const fetchBoothName = async (boothId: string): Promise<BoothInfo> => {
       }
     );
 
-    if (response.data.status === "success" && response.data.data) {
-      return {
-        boothName: response.data.data.booth_name || "",
-        tableCount: response.data.data.table_num || 0,
-      };
+    if (response.status === 200 && response.data.data) {
+      return response.data.data.booth_name || "부스 이름";
     }
 
-    // 실패 시 빈 값 반환
-    return { boothName: "", tableCount: 0 };
+    return "부스 이름";
   } catch (error) {
-    // 에러 상세 정보 출력 (디버깅용)
     if (axios.isAxiosError(error) && error.response) {
+      console.error("부스 이름 조회 실패:", error.response.data);
     }
-
-    return { boothName: "", tableCount: 0 };
+    return "부스 이름";
   }
+};
+
+// 테이블 입장 처리
+export const enterTable = async (
+  boothId: string,
+  tableNum: string
+): Promise<TableEnterResponse> => {
+  const numericBoothId = parseInt(boothId, 10);
+  const numericTableNum = parseInt(tableNum, 10);
+
+  // 유효성 검사
+  if (isNaN(numericBoothId) || numericBoothId <= 0) {
+    throw new Error("유효하지 않은 부스 ID입니다.");
+  }
+  if (isNaN(numericTableNum) || numericTableNum <= 0) {
+    throw new Error("유효하지 않은 테이블 번호입니다.");
+  }
+
+  const response = await axios.post<TableEnterResponse>(
+    `${import.meta.env.VITE_BASE_URL}api/v2/tables/enter/`,
+    {
+      booth_id: numericBoothId,
+      table_num: numericTableNum,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    }
+  );
+
+  return response.data;
 };

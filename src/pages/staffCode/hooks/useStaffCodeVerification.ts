@@ -1,61 +1,65 @@
+// hooks/useStaffCodeVerification.ts
+
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTE_CONSTANTS } from "@constants/RouteConstants";
+
+// API 함수와 타입을 모두 임포트
 import { verifyStaffCode } from "../_api/StaffCodeAPI";
 import { StaffCodeInputRef } from "../_components/StaffCodeInput";
 
+// 훅이 쿠폰 코드를 인자로 받도록 수정
 export const useStaffCodeVerification = () => {
   const navigate = useNavigate();
   const codeInputRef = useRef<StaffCodeInputRef>(null);
+
+  // 상태 추가: API 호출 진행 여부
+  const [isVerifying, setIsVerifying] = useState(false);
   const [showError, setShowError] = useState(false);
 
-  // 에러 메시지 초기화 및 코드 초기화 함수
   const resetErrorAndCode = () => {
     setShowError(false);
     codeInputRef.current?.resetCode();
   };
 
-  // 코드 검증 핸들러
+  // 코드 검증 핸들러에 쿠폰 적용 로직 추가
   const handleCodeVerification = async (code: string) => {
-    if (!code || code.length < 4) {
-      // 간단한 유효성 검사 (모든 코드가 입력되었는지)
-      setShowError(false); // 코드가 다 입력되지 않았으면 에러 메시지 숨김
-      return;
-    }
+    if (!code || code.length < 4) return;
+
+    setIsVerifying(true); // 로딩 시작
+    setShowError(false);
+
     try {
       const isValid = await verifyStaffCode(code);
-      setShowError(!isValid); // 유효하지 않으면 에러 메시지 표시
 
       if (isValid) {
-        // 유효성 검사 성공 시 약간의 딜레이 후 페이지 이동
-        setTimeout(() => {
-          navigate(ROUTE_CONSTANTS.ORDERCOMPLETE); // 실제로는 주문 완료 또는 다음 단계 페이지로 이동
-        }, 300);
+        // 성공 시 페이지 이동
+        navigate(ROUTE_CONSTANTS.ORDERCOMPLETE);
       } else {
-        // 유효하지 않은 코드일 경우, 에러 메시지 표시 후 일정 시간 후 초기화
-        setTimeout(() => {
-          resetErrorAndCode();
-        }, 500); // 사용자가 에러 메시지를 볼 수 있도록 일정 시간 후 초기화
+        // 실패 시 에러 표시 후 초기화
+        setShowError(true);
+        setTimeout(resetErrorAndCode, 800);
       }
     } catch (error) {
-      setShowError(true); // API 호출 실패 시 에러 메시지 표시
-
-      // 에러 발생 시에도 일정 시간 후 초기화
-      setTimeout(() => {
-        resetErrorAndCode();
-      }, 500);
+      // 쿠폰 적용 실패 또는 네트워크 오류
+      alert("처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      resetErrorAndCode();
+    } finally {
+      setIsVerifying(false); // 로딩 종료
     }
   };
 
-  // 코드 입력이 변경될 때마다 showError 상태를 초기화
+  // 입력 변경 시 에러 초기화
   const handleInputChange = () => {
     if (showError) {
       setShowError(false);
     }
   };
 
+  // 컴포넌트에서 사용할 상태와 함수들을 반환
   return {
     codeInputRef,
+    isVerifying,
     showError,
     handleCodeVerification,
     handleInputChange,

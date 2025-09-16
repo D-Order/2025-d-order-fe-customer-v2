@@ -110,6 +110,12 @@ export const Row2 = styled.div`
   justify-content: flex-end;
 `;
 
+export const Row3 = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+`;
+
 export const Title = styled.div`
   ${({ theme }) => theme.fonts.ExtraBold18};
   color: ${({ theme }) => theme.colors.Black01};
@@ -192,4 +198,9 @@ export const Toast = styled.div`
 
 export const ToastIcon = styled.img`
   width: 20px;
+`;
+
+export const Discount = styled.div`
+  ${({ theme }) => theme.fonts.Bold14};
+  color: ${({ theme }) => theme.colors.Orange01};
 `;

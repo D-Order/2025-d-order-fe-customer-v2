@@ -5,13 +5,11 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios";
 
-const table_num = localStorage.getItem("tableNum");
 const booth_id = localStorage.getItem("boothId");
 export const ApiShopping: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
   headers: {
-    "X-Booth-Id": booth_id,
-    "X-Table-Number": table_num,
+    "Booth-ID": booth_id,
   },
 });
 

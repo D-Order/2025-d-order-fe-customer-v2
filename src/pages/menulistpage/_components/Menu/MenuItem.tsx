@@ -4,11 +4,12 @@ import { useState } from 'react';
 
 import { MENULISTPAGE_CONSTANTS } from '../../_constants/menulistpageconstants';
 
-type Category = 'menu' | 'tableFee' | 'drink';
+type Category = 'menu' | 'tableFee' | 'set' | 'drink';
 
 interface ItemType {
   name: string;
   description: string;
+  originprice?: number;
   price: number;
   imageUrl: string;
   id: number;
@@ -26,10 +27,15 @@ const MenuItem = ({ item, onClick }: MenuItemProps) => {
     item.imageUrl || MENULISTPAGE_CONSTANTS.MENUITEMS.IMAGES.NONIMAGE
   );
   const isTableFeeAndSoldOut = item.category === 'tableFee' && item.soldOut;
+  const isSetMenu = item.category === 'set';
   const handleClick = () => {
     if (isTableFeeAndSoldOut) return;
     onClick(item);
   };
+  const fmt = (v: unknown) =>
+    new Intl.NumberFormat('ko-KR').format(Number(v ?? 0));
+  const price = Number(item?.price ?? 0);
+
   return (
     <S.Wrapper
       $soldout={item.soldOut}
@@ -50,7 +56,20 @@ const MenuItem = ({ item, onClick }: MenuItemProps) => {
           </S.ItemDes>
         </S.Col>
       </S.Row>
-      <S.ItemPrice>{item.price.toLocaleString()}원</S.ItemPrice>
+      {isSetMenu && item.originprice && item.originprice > price ? (
+        <S.Row>
+          <S.Discount>
+            {Math.round(((item.originprice - price) / item.originprice) * 100)}%
+            할인
+          </S.Discount>
+          <S.Col2>
+            <S.ItemPrice_deco>{fmt(item.originprice)}원</S.ItemPrice_deco>
+            <S.ItemPrice>{fmt(price)}원</S.ItemPrice>
+          </S.Col2>
+        </S.Row>
+      ) : (
+        <S.ItemPrice>{fmt(price)}원</S.ItemPrice>
+      )}
     </S.Wrapper>
   );
 };

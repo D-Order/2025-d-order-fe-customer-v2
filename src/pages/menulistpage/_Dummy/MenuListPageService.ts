@@ -128,4 +128,37 @@ export const MenuListPageService = {
       },
     ];
   },
+
+  fetchSetMenus: () => {
+    return [
+      {
+        id: 100,
+        name: '디너 세트',
+        description: '스테이크와 와인이 포함된 세트',
+        price: 47000,
+        imageUrl: '/images/dinner.png',
+        category: 'set' as const,
+        soldOut: false,
+        quantity: 10,
+        menuItems: [
+          { menu_id: 10, quantity: 1 },
+          { menu_id: 20, quantity: 2 },
+        ],
+      },
+      {
+        id: 101,
+        name: '점심 세트',
+        description: '피자와 음료가 포함된 세트',
+        price: 25000,
+        imageUrl: '/images/lunch.png',
+        category: 'set' as const,
+        soldOut: false,
+        quantity: 5,
+        menuItems: [
+          { menu_id: 11, quantity: 1 },
+          { menu_id: 21, quantity: 1 },
+        ],
+      },
+    ];
+  },
 };

@@ -26,6 +26,7 @@ export const MENULISTPAGE_CONSTANTS = {
     TEXT: {
       TABLE: '테이블 : ',
       TABELFEE: '테이블 이용료',
+      SET: '세트',
       MENU: '메뉴',
       BEVERAGE: '음료',
     },

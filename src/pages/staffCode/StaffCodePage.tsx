@@ -10,7 +10,7 @@ import XIcon from "@assets/icons/xIcon.svg";
 import OrderInfo from "./_components/OrderInfo";
 import StaffCodeInput from "./_components/StaffCodeInput";
 import Loading from "@components/loading/Loading";
-// API 서비스 임포트
+// API 서비스 임포트- 나중에 다시 살리기
 import { fetchTableOrderInfo, TableOrderInfo } from "./_api/StaffCodeAPI";
 // 커스텀 훅 임포트
 import { useStaffCodeVerification } from "./hooks/useStaffCodeVerification";
@@ -18,7 +18,6 @@ import { useStaffCodeVerification } from "./hooks/useStaffCodeVerification";
 const StaffCodePage = () => {
   const navigate = useNavigate();
 
-  // 코드 검증 관련 로직을 커스텀 훅으로 분리
   const { codeInputRef, showError, handleCodeVerification, handleInputChange } =
     useStaffCodeVerification();
 
@@ -93,6 +92,7 @@ const StaffCodePage = () => {
           {tableInfo && (
             <OrderInfo
               table={tableInfo.tableNumber}
+              seat_count={tableInfo.seat_count}
               price={tableInfo.totalPrice}
             />
           )}
