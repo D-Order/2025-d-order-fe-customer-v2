@@ -6,6 +6,8 @@ export const Wrapper = styled.div<{ $soldout?: boolean; disabled?: boolean }>`
   justify-content: space-between;
   align-items: center;
 
+  gap: 0.5rem;
+
   opacity: ${({ $soldout }) => ($soldout ? 0.4 : 1)};
   pointer-events: ${({ disabled, $soldout }) =>
     disabled || $soldout ? 'none' : 'auto'};
@@ -18,6 +20,13 @@ export const Row = styled.div`
   align-items: center;
   flex-direction: row;
   gap: 1.5rem;
+`;
+
+export const Row2 = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 0.5rem;
 `;
 
 export const MenuImage = styled.img`
