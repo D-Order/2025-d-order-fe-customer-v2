@@ -231,8 +231,15 @@ const useShoppingCartPage = () => {
   };
 
   // 계좌 페이지 이동
-  const Pay = async (code: string) => {
+  const Pay = async (code?: string) => {
     try {
+      // 쿠폰 코드가 없으면 바로 이동
+      if (!code || !code.trim()) {
+        setIsSendMoneyModal(false);
+        navigate(ROUTE_CONSTANTS.STAFFCODE);
+        return;
+      }
+
       await instance.post(
         "api/v2/cart/apply-coupon/",
         {
