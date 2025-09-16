@@ -15,7 +15,6 @@ const ShoppingFooter = ({
   CheckShoppingItems: () => void;
   setIsCouponModal: React.Dispatch<SetStateAction<boolean>>;
 }) => {
-  console.log(appliedCoupon);
   return (
     <Wrapper>
       <CouponWrapper>

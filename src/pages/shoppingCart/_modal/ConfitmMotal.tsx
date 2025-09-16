@@ -42,6 +42,8 @@ const ModalContainer = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    word-break: keep-all;
+    text-align: center;
   }
   div:nth-child(1) {
     grid-row: 1/2;
