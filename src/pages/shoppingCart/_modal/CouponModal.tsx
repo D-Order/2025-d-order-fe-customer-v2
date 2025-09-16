@@ -10,6 +10,8 @@ interface CouponModalProps {
   setAppliedCoupon: React.Dispatch<SetStateAction<boolean>>;
   couponCode: string;
   setCouponCode: React.Dispatch<SetStateAction<string>>;
+  couponName: string;
+  setCouponName: React.Dispatch<SetStateAction<string>>;
 }
 
 const CouponModal = ({
@@ -19,12 +21,17 @@ const CouponModal = ({
   setAppliedCoupon,
   couponCode,
   setCouponCode,
+  couponName,
+  setCouponName,
 }: CouponModalProps) => {
   const handleApply = async () => {
     if (!couponCode.trim()) return;
 
     try {
-      await CheckCoupon(couponCode);
+      if (appliedCoupon) return;
+      const result = await CheckCoupon(couponCode);
+      setCouponName(result.data.coupon_name);
+      setCouponCode("");
       onClose();
     } catch (error: any) {
       toast.error("해당 번호의 쿠폰이 존재하지 않아요!", {
@@ -43,7 +50,7 @@ const CouponModal = ({
     }
   };
 
-  const isDisabled = couponCode === "";
+  const isDisabled = couponCode === "" || appliedCoupon;
 
   return (
     <Wrapper>
@@ -55,6 +62,7 @@ const CouponModal = ({
             value={couponCode}
             onChange={(e) => setCouponCode(e.target.value)}
             placeholder="쿠폰 번호 입력"
+            disabled={appliedCoupon}
           />
         </InputContainer>
         {appliedCoupon && (
@@ -67,7 +75,7 @@ const CouponModal = ({
                 id="coupon"
               />
               <div>
-                첫주문5000원 할인
+                {couponName}
                 <img
                   src={IMAGE_CONSTANTS.XICON}
                   alt="쿠폰 적용 취소하기"
