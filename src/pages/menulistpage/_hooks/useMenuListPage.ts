@@ -1,18 +1,18 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 // import { MenuListService } from '../_services/MenuListService';
-import { ROUTE_CONSTANTS } from '@constants/RouteConstants';
-import { MENULISTPAGE_CONSTANTS } from '../_constants/menulistpageconstants';
-import { useShoppingCartStore } from '@stores/shoppingCartStore';
+import { ROUTE_CONSTANTS } from "@constants/RouteConstants";
+import { MENULISTPAGE_CONSTANTS } from "../_constants/menulistpageconstants";
+import { useShoppingCartStore } from "@stores/shoppingCartStore";
 // import { MenuListPageService } from '../_Dummy/MenuListPageService';
-import { MenuListService } from '../_services/MenuListService';
-import { CartService } from '../_services/CartService';
-import { BoothID } from '../_services/BoothID';
+import { MenuListService } from "../_services/MenuListService";
+import { CartService } from "../_services/CartService";
+import { BoothID } from "../_services/BoothID";
 
 const SCROLL_OFFSET = 120;
 
-type MenuCategory = 'tableFee' | 'set' | 'menu' | 'drink';
+type MenuCategory = "tableFee" | "set" | "menu" | "drink";
 interface BaseMenuItem {
   id: number;
   name: string;
@@ -25,7 +25,7 @@ interface BaseMenuItem {
 }
 
 interface SetMenuItem extends BaseMenuItem {
-  category: 'set';
+  category: "set";
   menuItems: {
     menu_id: number;
     quantity: number;
@@ -41,7 +41,7 @@ const useMenuListPage = () => {
   const cartCount = cart.length;
 
   const [menuItems, setMenuItems] = useState<any[]>([]);
-  const [boothName, setBoothName] = useState<string>('');
+  const [boothName, setBoothName] = useState<string>("");
 
   const tableFeeRef = useRef<HTMLDivElement>(null);
   const setRef = useRef<HTMLDivElement>(null);
@@ -56,8 +56,8 @@ const useMenuListPage = () => {
   };
 
   const [selectedCategory, setSelectedCategory] = useState<
-    'tableFee' | 'set' | 'menu' | 'drink'
-  >('tableFee');
+    "tableFee" | "set" | "menu" | "drink"
+  >("tableFee");
   const [selectedItem, setSelectedItem] = useState<any | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpen2, setIsModalOpen2] = useState(false);
@@ -78,12 +78,12 @@ const useMenuListPage = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const boothId = localStorage.getItem('boothId') ?? '1';
-        const tableId = localStorage.getItem('tableNum') ?? '1';
+        const boothId = localStorage.getItem("boothId") ?? "1";
+        const tableId = localStorage.getItem("tableNum") ?? "1";
         const boothIdNumber = parseInt(boothId, 10);
         const tableNumber = tableId ? parseInt(tableId, 10) : null;
 
-        if (Number.isNaN(boothIdNumber)) throw new Error('Invalid boothId');
+        if (Number.isNaN(boothIdNumber)) throw new Error("Invalid boothId");
 
         // ✅ 실제 API 호출
         const { table, menus, setmenus } = await MenuListService.fetchAllMenus(
@@ -94,65 +94,65 @@ const useMenuListPage = () => {
 
         // 1) seat_fee 후보(메뉴 배열 안) — id/이미지 등 메타 재활용용
         const seatFeeFromMenus = Array.isArray(menus)
-          ? menus.find((m) => m.menu_category === 'seat_fee')
+          ? menus.find((m) => m.menu_category === "seat_fee")
           : undefined;
 
         // 2) 테이블 이용료 아이템 구성 (table.seat_type 우선)
         let seatItem: BaseMenuItem | null = null;
         const NON_IMG = MENULISTPAGE_CONSTANTS.MENUITEMS.IMAGES.NONIMAGE;
 
-        if (table?.seat_type === 'table') {
+        if (table?.seat_type === "table") {
           seatItem = {
             id: seatFeeFromMenus?.menu_id ?? 999001,
-            name: seatFeeFromMenus?.menu_name ?? '테이블 이용료',
+            name: seatFeeFromMenus?.menu_name ?? "테이블 이용료",
             description:
               seatFeeFromMenus?.menu_description ??
-              '테이블 기준 1회 필수 주문이 필요해요.',
+              "테이블 기준 1회 필수 주문이 필요해요.",
             price: table?.seat_tax_table ?? seatFeeFromMenus?.menu_price ?? 0,
             imageUrl: seatFeeFromMenus?.menu_image ?? NON_IMG,
             quantity: 1, // 테이블당 1회
             soldOut: false,
-            category: 'tableFee',
+            category: "tableFee",
           };
-        } else if (table?.seat_type === 'person') {
+        } else if (table?.seat_type === "person") {
           seatItem = {
             id: seatFeeFromMenus?.menu_id ?? 999002,
-            name: seatFeeFromMenus?.menu_name ?? '테이블 이용료',
+            name: seatFeeFromMenus?.menu_name ?? "테이블 이용료",
             description:
               seatFeeFromMenus?.menu_description ??
-              '인원 수에 맞춰 주문해 주세요.',
+              "인원 수에 맞춰 주문해 주세요.",
             price: table?.seat_tax_person ?? seatFeeFromMenus?.menu_price ?? 0,
             imageUrl: seatFeeFromMenus?.menu_image ?? NON_IMG,
             quantity: 100, // 인원 기준: 충분히 크게(클라에서 상한 체크)
             soldOut: false,
-            category: 'tableFee',
+            category: "tableFee",
           };
-        } else if (table?.seat_type === 'none') {
+        } else if (table?.seat_type === "none") {
           seatItem = {
             id: seatFeeFromMenus?.menu_id ?? 999003,
-            name: seatFeeFromMenus?.menu_name ?? '테이블 이용료',
+            name: seatFeeFromMenus?.menu_name ?? "테이블 이용료",
             description:
               seatFeeFromMenus?.menu_description ??
-              '현재 테이블 이용이 제한되어 있어요.',
+              "현재 테이블 이용이 제한되어 있어요.",
             price: 0,
             imageUrl: seatFeeFromMenus?.menu_image ?? NON_IMG,
             quantity: 0,
             soldOut: true,
-            category: 'tableFee',
+            category: "tableFee",
           };
         } else {
           // table 정보가 없을 때: seat_fee가 menus에 있으면 사용, 아니면 노출 생략
           if (seatFeeFromMenus) {
             seatItem = {
               id: seatFeeFromMenus.menu_id,
-              name: seatFeeFromMenus.menu_name ?? '테이블 이용료',
+              name: seatFeeFromMenus.menu_name ?? "테이블 이용료",
               description:
-                seatFeeFromMenus.menu_description ?? '테이블 이용료입니다.',
+                seatFeeFromMenus.menu_description ?? "테이블 이용료입니다.",
               price: seatFeeFromMenus.menu_price ?? 0,
               imageUrl: seatFeeFromMenus.menu_image ?? NON_IMG,
               quantity: seatFeeFromMenus.menu_amount ?? 1, // 백엔드 수량이 매우 클 수 있음
               soldOut: !!seatFeeFromMenus.is_soldout,
-              category: 'tableFee',
+              category: "tableFee",
             };
           } else {
             seatItem = null; // 아예 노출하지 않음
@@ -161,10 +161,10 @@ const useMenuListPage = () => {
 
         // 3) 일반 메뉴 매핑 (seat_fee 제외)
         const mappedMenus: BaseMenuItem[] = (menus ?? [])
-          .filter((m) => m.menu_category !== 'seat_fee')
+          .filter((m) => m.menu_category !== "seat_fee")
           .map((m) => {
-            const mappedCategory: 'menu' | 'drink' =
-              m.menu_category === '음료' ? 'drink' : 'menu';
+            const mappedCategory: "menu" | "drink" =
+              m.menu_category === "음료" ? "drink" : "menu";
             return {
               id: m.menu_id,
               name: m.menu_name,
@@ -187,7 +187,7 @@ const useMenuListPage = () => {
           imageUrl: s.set_image ?? undefined,
           quantity: Number.MAX_SAFE_INTEGER, // 세트 수량 제한 없으면 충분히 크게
           soldOut: !!s.is_soldout,
-          category: 'set',
+          category: "set",
           menuItems: s.menu_items ?? [],
         }));
 
@@ -229,18 +229,18 @@ const useMenuListPage = () => {
     }
   }, [showToast]);
 
-  const handleScrollTo = (category: 'tableFee' | 'set' | 'menu' | 'drink') => {
+  const handleScrollTo = (category: "tableFee" | "set" | "menu" | "drink") => {
     setSelectedCategory(category);
     const target = sectionRefs[category].current;
     if (target) {
       const top = target.offsetTop - SCROLL_OFFSET;
-      window.scrollTo({ top, behavior: 'smooth' });
+      window.scrollTo({ top, behavior: "smooth" });
     }
   };
 
   useEffect(() => {
     const handleScroll = () => {
-      let activeCategory: 'tableFee' | 'set' | 'menu' | 'drink' | null = null;
+      let activeCategory: "tableFee" | "set" | "menu" | "drink" | null = null;
       let maxTop = -Infinity;
 
       const scrollTop = window.scrollY;
@@ -248,7 +248,7 @@ const useMenuListPage = () => {
       const pageHeight = document.documentElement.scrollHeight;
 
       if (pageHeight - scrollBottom < 10) {
-        setSelectedCategory('drink');
+        setSelectedCategory("drink");
         return;
       }
 
@@ -257,7 +257,7 @@ const useMenuListPage = () => {
           const rectTop = ref.current.getBoundingClientRect().top;
           if (rectTop <= SCROLL_OFFSET && rectTop > maxTop) {
             maxTop = rectTop;
-            activeCategory = key as 'tableFee' | 'set' | 'menu' | 'drink';
+            activeCategory = key as "tableFee" | "set" | "menu" | "drink";
           }
         }
       });
@@ -267,12 +267,12 @@ const useMenuListPage = () => {
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [selectedCategory]);
 
   const handleOpenModal = (item: any) => {
-    if (item.category === 'tableFee' && item.soldOut) return;
+    if (item.category === "tableFee" && item.soldOut) return;
     setSelectedItem(item);
     resetCount();
     setIsModalOpen(true);
@@ -283,14 +283,14 @@ const useMenuListPage = () => {
   const handleSubmitItem = async () => {
     if (!selectedItem) return;
     if (!tableNum) {
-      setErrorToast('테이블 번호를 확인할 수 없어요.');
+      setErrorToast("테이블 번호를 확인할 수 없어요.");
       return;
     }
     if (count <= 0) return;
 
     // ✅ type 매핑: set → set_menu, 나머지는 menu
-    const type: 'menu' | 'set_menu' =
-      selectedItem.category === 'set' ? 'set_menu' : 'menu';
+    const type: "menu" | "set_menu" =
+      selectedItem.category === "set" ? "set_menu" : "menu";
 
     try {
       // 🔗 장바구니 API 호출
@@ -313,7 +313,7 @@ const useMenuListPage = () => {
       console.error(e);
       setErrorToast(
         e?.response?.data?.message ||
-          '장바구니 담기 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.'
+          "장바구니 담기 중 오류가 발생했어요. 잠시 후 다시 시도해주세요."
       );
     } finally {
     }
@@ -353,6 +353,7 @@ const useMenuListPage = () => {
     showToast,
     handleDecrease,
     handleIncrease,
+    errorToast, // 빌드오류해결을 위해 읽히지 않고 있는값 추가
   };
 };
 
