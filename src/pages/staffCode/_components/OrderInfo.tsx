@@ -2,17 +2,19 @@ import styled from "styled-components";
 
 // props 타입 정의 추가
 interface OrderInfoProps {
-  table: number;
-
+  table: string;
+  seat_count: number;
   price: number;
 }
 
-const OrderInfo = ({ table, price }: OrderInfoProps) => {
+const OrderInfo = ({ table, seat_count, price }: OrderInfoProps) => {
   return (
     <OrderInfoWrapper>
       <TableInfo>
         <TableInfoText color="orange">테이블: {table}</TableInfoText>
-        {/* <TableInfoText color="black">인원수: {people}</TableInfoText> */}
+        {seat_count > 0 ? (
+          <TableInfoText color="black">인원수: {seat_count}</TableInfoText>
+        ) : null}
       </TableInfo>
       <TotalPriceText>{price}원</TotalPriceText>
     </OrderInfoWrapper>
