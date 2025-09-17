@@ -23,6 +23,7 @@ export type ApiSetMenu = {
   booth_id: number;
   is_soldout: boolean;
   origin_price: number;
+  min_menu_amount: number;
   set_name: string;
   set_description: string;
   set_image: string | null;
