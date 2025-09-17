@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useEffect, useImperativeHandle, forwardRef } from "react";
+import { useImperativeHandle, forwardRef } from "react";
 
 //hooks
 import useCodeInput from "../hooks/useCodeInput";
@@ -31,14 +31,6 @@ const StaffCodeInput = forwardRef<StaffCodeInputRef, StaffCodeInputProps>(
     useImperativeHandle(ref, () => ({
       resetCode,
     }));
-
-    // // 코드가 모두 입력되었을 때 부모 컴포넌트에 알림
-    // useEffect(() => {
-    //   const isCodeComplete = code.every((digit) => digit !== "");
-    //   if (isCodeComplete && onComplete) {
-    //     onComplete(code); // 현재 입력된 코드 배열을 전달
-    //   }
-    // }, [code, onComplete]);
 
     return (
       <StaffCodeInputWrapper>
