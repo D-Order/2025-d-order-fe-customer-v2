@@ -233,6 +233,17 @@ const useShoppingCartPage = () => {
   // 계좌 페이지 이동
   const Pay = async (code?: string) => {
     try {
+      await instance.post(
+        "api/v2/tables/call_staff/",
+        {
+          table_num,
+        },
+        {
+          headers: {
+            "Booth-ID": boothId,
+          },
+        }
+      );
       // 쿠폰 코드가 없으면 바로 이동
       if (!code || !code.trim()) {
         setIsSendMoneyModal(false);
@@ -251,6 +262,7 @@ const useShoppingCartPage = () => {
           },
         }
       );
+
       setIsSendMoneyModal(false);
     } catch (err) {
       console.log(err);
