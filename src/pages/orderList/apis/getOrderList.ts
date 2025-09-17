@@ -1,65 +1,57 @@
+// src/pages/orderList/apis/getOrderList.ts
 import axios from "axios";
-const baseURL = import.meta.env.VITE_BASE_URL;
-export type OrderStatus = "pending" | "accepted" | "rejected" | "completed";
 
-export type MenuOrderItem = {
-  type: "menu";
-  id: number;
-  order_id: number;
-  menu_id: number;
-  menu_name: string;
-  menu_price: number;
-  fixed_price: number;
+export interface RawOrderItem {
+  type: "menu" | "setmenu";
+  // menu 
+  menu_id?: number;
+  menu_name?: string;
+  menu_price?: number;
+  menu_image?: string | null;
+  menu_category?: string;
+
+  // setmenu 
+  set_id?: number;
+  set_name?: string;
+  set_price?: number;
+  set_image?: string | null;
+
+  // 공통
+  fixed_price?: number;
   quantity: number;
-  status: OrderStatus;       
-  created_at: string;
-  updated_at: string;
-  order_amount: number;
-  table_num: number;
-  menu_image: string | null;
-  menu_category: string;     
-};
-
-export type SetMenuOrderItem = {
-  type: "setmenu";
-  id: number;
-  order_id: number;
-  set_id: number;
-  set_name: string;
-  set_price: number;
-  fixed_price: number;
-  quantity: number;
-  status: OrderStatus;
-  created_at: string;
-  updated_at: string;
-  order_amount: number;
-  table_num: number;
-  set_image: string | null;
-};
-
-export type RawOrderItem = MenuOrderItem | SetMenuOrderItem;
-
-export interface OrderListData {
-  order_amount: number;       
-  orders: RawOrderItem[];   
+  status: "pending" | "cooked" | "served";
 }
 
 export interface OrderListResponse {
   status: "success" | "error";
-  code: number;           
-  data?: OrderListData;
+  code: number;
+  data?: {
+    order_amount: number;
+    orders: RawOrderItem[];
+  };
   message?: string;
 }
 
-export const getOrderList = async (
-  tableNum: number,
-  boothId: number
-): Promise<OrderListResponse> => {
-  const res = await axios.get(`${baseURL}api/v2/tables/${tableNum}/orders/`, {
-    headers: {
-      "Booth-ID": boothId,
-      "Content-Type": "application/json",
-    },
+export function toAbsoluteUrl(path?: string | null): string | null {
+  if (!path) return null;
+  if (/^https?:\/\//i.test(path)) return path;
+
+  const base = (import.meta.env.VITE_BASE_URL ?? "").replace(/\/+$/, "");
+  const rel = String(path).replace(/^\/+/, "");
+  return base ? `${base}/${rel}` : `/${rel}`;
+}
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_BASE_URL ?? "",
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+export async function getOrderList(tableNum: number, boothId: number) {
+  const res = await api.get<OrderListResponse>(`/api/v2/tables/${tableNum}/orders/`, {
+    headers: { "booth-id": String(boothId) },
   });
   return res.data;
-};
+}

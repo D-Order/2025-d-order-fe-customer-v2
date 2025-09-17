@@ -1,3 +1,4 @@
+// src/pages/orderList/OrderListPage.tsx
 import * as S from "./OrderListPage.styled";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -7,8 +8,9 @@ import ACCO from "@assets/images/character.svg";
 import { ROUTE_CONSTANTS } from "@constants/RouteConstants";
 import { useOrderList } from "./hooks/useOrderList";
 import EmptyOrder from "./_components/EmptyOrder";
+import Loading from "@components/loading/Loading";
 import type { RawOrderItem } from "./apis/getOrderList";
-import Loading from "@components/loading/Loading"; // ✅ 이미 임포트 OK
+import { toAbsoluteUrl } from "./apis/getOrderList"; 
 
 interface OrderItem {
   id: number;
@@ -28,21 +30,23 @@ const OrderListPage = () => {
 
   const normalize = (item: RawOrderItem): OrderItem => {
     if (item.type === "menu") {
-      const unit = item.fixed_price ?? item.menu_price;
+      const unit = item.fixed_price ?? item.menu_price ?? 0;
+      const abs = toAbsoluteUrl(item.menu_image);
       return {
-        id: item.id,
-        name: item.menu_name,
+        id: item.menu_id ?? 0,                  
+        name: item.menu_name ?? "",
         price: unit,
-        image: item.menu_image ?? ACCO,
+        image: abs ?? ACCO,                   
         quantity: item.quantity,
       };
     } else {
-      const unit = item.fixed_price ?? item.set_price;
+      const unit = item.fixed_price ?? item.set_price ?? 0;
+      const abs = toAbsoluteUrl(item.set_image);
       return {
-        id: item.id,
-        name: item.set_name,
+        id: item.set_id ?? 0,  
+        name: item.set_name ?? "",
         price: unit,
-        image: item.set_image ?? ACCO,
+        image: abs ?? ACCO, 
         quantity: item.quantity,
       };
     }
