@@ -50,13 +50,15 @@ const MenuAssignModal = ({
                   {item.price.toLocaleString()}
                   {MENULISTPAGE_CONSTANTS.ASSIGNMODAL.TEXT.WON}
                 </S.Price>
-                {isSetMenu && item.originprice && (
+                {isSetMenu && item.originprice && item.originprice > price ? (
                   <S.Discount>
                     {Math.round(
                       ((item.originprice - price) / item.originprice) * 100
                     )}
                     %
                   </S.Discount>
+                ) : (
+                  <S.Discount></S.Discount>
                 )}
               </S.Row3>
             </S.Col2>
