@@ -19,6 +19,7 @@ const ShoppingCartPage = () => {
   const [menus, setMenu] = useState<Menu[]>([]);
   const [setMenus, setSetMenu] = useState<Menu[]>([]);
   const [couponCode, setCouponCode] = useState("");
+  const [usingCoupon, setUsingCoupon] = useState("");
   const [couponName, setCouponName] = useState("");
   const {
     shoppingItemResponse,
@@ -75,7 +76,6 @@ const ShoppingCartPage = () => {
       setSetMenu(shoppingItemResponse.data.cart.set_menus || []);
     }
   }, [shoppingItemResponse]);
-
   return (
     <Wrapper>
       <ShoppingHeader
@@ -141,7 +141,7 @@ const ShoppingCartPage = () => {
             copyAccount={(text: string) => CopyAccount(text)}
             totalPrice={totalPrice}
             accountInfo={accountInfo}
-            couponCode={couponCode}
+            usingCoupon={usingCoupon}
           />
         </DarkWrapper>
       )}
@@ -156,6 +156,7 @@ const ShoppingCartPage = () => {
             setCouponCode={setCouponCode}
             couponName={couponName}
             setCouponName={setCouponName}
+            setUsingCoupon={setUsingCoupon}
           />
         </DarkWrapper>
       )}

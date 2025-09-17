@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import CharacterLogo from "@assets/images/character.svg?react"; // SVG 컴포넌트 임포트
 
 export const Wrapper = styled.div`
   display: flex;
@@ -58,7 +59,7 @@ export const LottieWrapper = styled.div`
   z-index: 0;
 `;
 
-export const Logo = styled.img`
+export const Logo = styled(CharacterLogo)`
   display: flex;
   width: 191px;
   height: auto;

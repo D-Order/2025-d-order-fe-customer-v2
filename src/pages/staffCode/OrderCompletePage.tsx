@@ -29,7 +29,7 @@ const OrderCompletePage = () => {
         <S.LottieWrapper>
           <Lottie animationData={fireWork} loop={true} />
         </S.LottieWrapper>
-        <S.Logo src={IMAGE_CONSTANTS.CHARACTER} alt="아코캐릭터" />
+        <S.Logo />
       </S.LogoWrapper>
 
       <S.BtnWrapper>

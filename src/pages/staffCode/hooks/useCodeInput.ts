@@ -10,12 +10,27 @@ const useCodeInput = (length: number, onChangeCallback?: () => void) => {
     Array(length).fill(null)
   );
 
+  // useEffect(() => {
+  //   if (inputRefs.current[0]) {
+  //     inputRefs.current[0].focus();
+  //   }
+  // }, []);
+
   useEffect(() => {
-    if (inputRefs.current[0]) {
-      inputRefs.current[0].focus();
-    }
+    inputRefs.current[0]?.focus();
   }, []);
 
+  const setCodeAt = (index: number, value: string) => {
+    const newCode = [...code];
+    newCode[index] = value;
+    setCode(newCode);
+    if (onChangeCallback) onChangeCallback();
+
+    if (value && index < length - 1) {
+      inputRefs.current[index + 1]?.focus();
+      setActiveIndex(index + 1);
+    }
+  };
   // 코드 초기화 함수 추가
   const resetCode = () => {
     setCode(Array(length).fill(""));
@@ -26,27 +41,27 @@ const useCodeInput = (length: number, onChangeCallback?: () => void) => {
     }
   };
 
-  const handleChange =
-    (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      const numericValue = value.replace(/[^0-9]/g, "");
-      const singleDigit = numericValue.slice(-1);
+  // const handleChange =
+  //   (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+  //     const value = e.target.value;
+  //     const numericValue = value.replace(/[^0-9]/g, "");
+  //     const singleDigit = numericValue.slice(-1);
 
-      if (singleDigit || value === "") {
-        const newCode = [...code];
-        newCode[index] = singleDigit;
-        setCode(newCode);
+  //     if (singleDigit || value === "") {
+  //       const newCode = [...code];
+  //       newCode[index] = singleDigit;
+  //       setCode(newCode);
 
-        if (onChangeCallback) {
-          onChangeCallback();
-        }
+  //       if (onChangeCallback) {
+  //         onChangeCallback();
+  //       }
 
-        if (singleDigit && index < length - 1) {
-          inputRefs.current[index + 1]?.focus();
-          setActiveIndex(index + 1);
-        }
-      }
-    };
+  //       if (singleDigit && index < length - 1) {
+  //         inputRefs.current[index + 1]?.focus();
+  //         setActiveIndex(index + 1);
+  //       }
+  //     }
+  //   };
 
   const handleKeyDown =
     (index: number) => (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -74,7 +89,8 @@ const useCodeInput = (length: number, onChangeCallback?: () => void) => {
     code,
     activeIndex,
     inputRefs,
-    handleChange,
+    // handleChange,
+    setCodeAt,
     handleKeyDown,
     handleBoxClick,
     resetCode, // 코드 초기화 함수 반환

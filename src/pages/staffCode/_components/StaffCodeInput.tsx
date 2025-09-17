@@ -20,7 +20,8 @@ const StaffCodeInput = forwardRef<StaffCodeInputRef, StaffCodeInputProps>(
       code,
       activeIndex,
       inputRefs,
-      handleChange,
+      // handleChange,
+      setCodeAt,
       handleKeyDown,
       handleBoxClick,
       resetCode,
@@ -31,13 +32,13 @@ const StaffCodeInput = forwardRef<StaffCodeInputRef, StaffCodeInputProps>(
       resetCode,
     }));
 
-    // 코드가 모두 입력되었을 때 부모 컴포넌트에 알림
-    useEffect(() => {
-      const isCodeComplete = code.every((digit) => digit !== "");
-      if (isCodeComplete && onComplete) {
-        onComplete(code); // 현재 입력된 코드 배열을 전달
-      }
-    }, [code, onComplete]);
+    // // 코드가 모두 입력되었을 때 부모 컴포넌트에 알림
+    // useEffect(() => {
+    //   const isCodeComplete = code.every((digit) => digit !== "");
+    //   if (isCodeComplete && onComplete) {
+    //     onComplete(code); // 현재 입력된 코드 배열을 전달
+    //   }
+    // }, [code, onComplete]);
 
     return (
       <StaffCodeInputWrapper>
@@ -59,7 +60,19 @@ const StaffCodeInput = forwardRef<StaffCodeInputRef, StaffCodeInputProps>(
               pattern="[0-9]*"
               autoComplete="off"
               value={code[index]}
-              onChange={handleChange(index)}
+              onChange={(e) => {
+                const v = e.target.value.replace(/[^0-9]/g, "").slice(-1);
+                setCodeAt(index, v);
+                onChange?.();
+
+                // 마지막 인덱스에서만 완료 판정
+                if (v && index === 3) {
+                  const filled = [...code];
+                  filled[index] = v;
+                  const complete = filled.every((d) => d !== "");
+                  if (complete) onComplete(filled);
+                }
+              }}
               onKeyDown={handleKeyDown(index)}
               autoFocus={index === 0}
             />
