@@ -57,7 +57,7 @@ const MenuItem = ({ item, onClick }: MenuItemProps) => {
         </S.Col>
       </S.Row>
       {isSetMenu && item.originprice && item.originprice > price ? (
-        <S.Row>
+        <S.Row2>
           <S.Discount>
             {Math.round(((item.originprice - price) / item.originprice) * 100)}%
             할인
@@ -66,7 +66,7 @@ const MenuItem = ({ item, onClick }: MenuItemProps) => {
             <S.ItemPrice_deco>{fmt(item.originprice)}원</S.ItemPrice_deco>
             <S.ItemPrice>{fmt(price)}원</S.ItemPrice>
           </S.Col2>
-        </S.Row>
+        </S.Row2>
       ) : (
         <S.ItemPrice>{fmt(price)}원</S.ItemPrice>
       )}

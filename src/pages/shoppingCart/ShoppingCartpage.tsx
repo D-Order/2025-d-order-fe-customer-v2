@@ -19,6 +19,7 @@ const ShoppingCartPage = () => {
   const [menus, setMenu] = useState<Menu[]>([]);
   const [setMenus, setSetMenu] = useState<Menu[]>([]);
   const [couponCode, setCouponCode] = useState("");
+  const [couponName, setCouponName] = useState("");
   const {
     shoppingItemResponse,
     isConfirmModal,
@@ -153,6 +154,8 @@ const ShoppingCartPage = () => {
             setAppliedCoupon={setAppliedCoupon}
             couponCode={couponCode}
             setCouponCode={setCouponCode}
+            couponName={couponName}
+            setCouponName={setCouponName}
           />
         </DarkWrapper>
       )}
@@ -195,7 +198,7 @@ const ShoppingListWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-height: calc(100vh - 160px - 100px - 2em);
+  max-height: calc(100vh - 200px - 100px - 2em);
   overflow-y: auto;
 `;
 
