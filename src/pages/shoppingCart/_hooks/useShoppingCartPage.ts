@@ -236,10 +236,9 @@ const useShoppingCartPage = () => {
       // 쿠폰 코드가 없으면 바로 이동
       if (!code || !code.trim()) {
         setIsSendMoneyModal(false);
-        navigate(ROUTE_CONSTANTS.STAFFCODE);
+
         return;
       }
-
       await instance.post(
         "api/v2/cart/apply-coupon/",
         {
@@ -252,13 +251,11 @@ const useShoppingCartPage = () => {
           },
         }
       );
-      const search = appliedCouponCode
-        ? `?coupon=${encodeURIComponent(appliedCouponCode)}`
-        : "";
       setIsSendMoneyModal(false);
-      navigate(`${ROUTE_CONSTANTS.STAFFCODE}${search}`);
     } catch (err) {
       console.log(err);
+    } finally {
+      navigate(`${ROUTE_CONSTANTS.STAFFCODE}`);
     }
   };
 
