@@ -16,6 +16,7 @@ export const useStaffCodeVerification = () => {
   // 상태 추가: API 호출 진행 여부
   const [isVerifying, setIsVerifying] = useState(false);
   const [showError, setShowError] = useState(false);
+  const verifiedRef = useRef(false); // 완료 가드
 
   const resetErrorAndCode = () => {
     setShowError(false);
@@ -24,15 +25,19 @@ export const useStaffCodeVerification = () => {
 
   // 코드 검증 핸들러에 쿠폰 적용 로직 추가
   const handleCodeVerification = async (code: string) => {
+    if (verifiedRef.current) return; // 이미 성공 처리됨
+    if (isVerifying) return; // 진행 중 중복 방지
+
     if (!code || code.length < 4) return;
 
     setIsVerifying(true); // 로딩 시작
-    setShowError(false);
+    // setShowError(false);
 
     try {
       const isValid = await verifyStaffCode(code);
 
       if (isValid) {
+        verifiedRef.current = true; // 재호출 차단
         // 성공 시 페이지 이동
         navigate(ROUTE_CONSTANTS.ORDERCOMPLETE);
       } else {
