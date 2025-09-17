@@ -41,28 +41,6 @@ const useCodeInput = (length: number, onChangeCallback?: () => void) => {
     }
   };
 
-  // const handleChange =
-  //   (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-  //     const value = e.target.value;
-  //     const numericValue = value.replace(/[^0-9]/g, "");
-  //     const singleDigit = numericValue.slice(-1);
-
-  //     if (singleDigit || value === "") {
-  //       const newCode = [...code];
-  //       newCode[index] = singleDigit;
-  //       setCode(newCode);
-
-  //       if (onChangeCallback) {
-  //         onChangeCallback();
-  //       }
-
-  //       if (singleDigit && index < length - 1) {
-  //         inputRefs.current[index + 1]?.focus();
-  //         setActiveIndex(index + 1);
-  //       }
-  //     }
-  //   };
-
   const handleKeyDown =
     (index: number) => (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Backspace") {
