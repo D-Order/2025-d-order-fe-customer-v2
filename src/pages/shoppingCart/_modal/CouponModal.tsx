@@ -12,6 +12,7 @@ interface CouponModalProps {
   setCouponCode: React.Dispatch<SetStateAction<string>>;
   couponName: string;
   setCouponName: React.Dispatch<SetStateAction<string>>;
+  setUsingCoupon: React.Dispatch<SetStateAction<string>>;
 }
 
 const CouponModal = ({
@@ -23,6 +24,7 @@ const CouponModal = ({
   setCouponCode,
   couponName,
   setCouponName,
+  setUsingCoupon,
 }: CouponModalProps) => {
   const handleApply = async () => {
     if (!couponCode.trim()) return;
@@ -31,6 +33,7 @@ const CouponModal = ({
       if (appliedCoupon) return;
       const result = await CheckCoupon(couponCode);
       setCouponName(result.data.coupon_name);
+      setUsingCoupon(couponCode);
       setCouponCode("");
       onClose();
     } catch (error: any) {
@@ -51,7 +54,10 @@ const CouponModal = ({
   };
 
   const isDisabled = couponCode === "" || appliedCoupon;
-
+  const handleDeleteCoupon = () => {
+    setAppliedCoupon(false);
+    setUsingCoupon("");
+  };
   return (
     <Wrapper>
       <ModalContainer>
@@ -80,7 +86,7 @@ const CouponModal = ({
                   src={IMAGE_CONSTANTS.XICON}
                   alt="쿠폰 적용 취소하기"
                   id="close"
-                  onClick={() => setAppliedCoupon(false)}
+                  onClick={() => handleDeleteCoupon()}
                 />
               </div>
             </CouponWraper>
