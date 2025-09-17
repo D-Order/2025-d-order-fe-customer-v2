@@ -1,7 +1,6 @@
 import styled from "styled-components";
-
-import CharacterLogo from "@assets/images/character.svg";
-import TextLogo from "@assets/images/redLogo.svg";
+import CharacterLogo from "@assets/images/character.svg?react";
+import TextLogo from "@assets/images/redLogo.svg?react";
 
 interface LoginLogoProps {
   boothName: string;
@@ -11,16 +10,16 @@ const LoginLogo = ({ boothName }: LoginLogoProps) => {
   return (
     <LogoWrapper>
       <BoothName>{boothName || "부스 이름"}</BoothName>
-      <LogoImg
-        src={TextLogo}
-        alt="빨간글씨 디오더 로고"
-        style={{ width: "176px", height: "auto", marginBottom: "63px" }}
+
+      {/* img 태그 대신 컴포넌트로 사용 */}
+      <TextLogo
+        width="176px"
+        style={{ marginBottom: "63px" }}
+        aria-label="빨간글씨 디오더 로고"
+        role="img"
       />
-      <LogoImg
-        src={CharacterLogo}
-        alt="디오더 아코 로고"
-        style={{ width: "192px", height: "auto" }}
-      />
+
+      <CharacterLogo width="192px" aria-label="디오더 아코 로고" role="img" />
     </LogoWrapper>
   );
 };
@@ -33,9 +32,6 @@ const LogoWrapper = styled.div`
   align-items: center;
 `;
 
-const LogoImg = styled.img`
-  display: flex;
-`;
 const BoothName = styled.div`
   display: flex;
   ${({ theme }) => theme.fonts.ExtraBold18}
