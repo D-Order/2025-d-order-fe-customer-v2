@@ -79,6 +79,7 @@ const CouponBtn = styled.button`
 
   width: fit-content;
   height: 40px;
+  margin-top: 16px;
   padding: 8px 12px;
   background-color: ${({ theme }) => theme.colors.Orange01};
   color: ${({ theme }) => theme.colors.Bg};
