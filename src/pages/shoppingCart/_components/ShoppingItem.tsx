@@ -41,9 +41,9 @@ const ShoppingItem = ({
 
           <div className="contentWrapper">
             <PriceText>
-              {item.discounted_price
-                ? item.discounted_price.toLocaleString("ko-KR")
-                : "가격 미정"}
+              {item.menu_price
+                ? item.menu_price.toLocaleString("ko-KR")
+                : item.discounted_price.toLocaleString("ko-KR")}
               원
             </PriceText>
             <AmountWrapper>
