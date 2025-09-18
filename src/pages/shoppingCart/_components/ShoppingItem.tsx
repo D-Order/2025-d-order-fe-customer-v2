@@ -40,7 +40,12 @@ const ShoppingItem = ({
           </div>
 
           <div className="contentWrapper">
-            <PriceText>{item.menu_price.toLocaleString("ko-KR")}원</PriceText>
+            <PriceText>
+              {item.discounted_price
+                ? item.discounted_price.toLocaleString("ko-KR")
+                : "가격 미정"}
+              원
+            </PriceText>
             <AmountWrapper>
               <button onClick={onDecrease} disabled={item.quantity === 1}>
                 <img

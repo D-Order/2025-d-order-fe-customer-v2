@@ -54,7 +54,7 @@ const useShoppingCartPage = () => {
       0
     );
     const setMenusTotal = (Array.isArray(setMenus) ? setMenus : []).reduce(
-      (total, item) => total + item.menu_price * item.quantity,
+      (total, item) => total + item.discounted_price * item.quantity,
       0
     );
     return menusTotal + setMenusTotal;
