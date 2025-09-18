@@ -181,7 +181,7 @@ const ShoppingListEmpty = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: calc(100vh - 98px - 200px);
+  height: calc(var(--vh, 1vh) * 100 - 98px - 200px);
 
   img {
     width: 60%;
@@ -199,7 +199,7 @@ const ShoppingListWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-height: calc(100vh - 200px - 100px - 2em);
+  max-height: calc(var(--vh, 1vh) * 100 - 200px - 100px - 2em);
   overflow-y: auto;
 `;
 
