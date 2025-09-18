@@ -52,8 +52,13 @@ const ShoppingItem = ({
                     ((item.original_price - item.discounted_price) /
                       item.original_price) *
                       100
-                  )}
-                  % 할인
+                  ) > 0
+                    ? `${Math.round(
+                        ((item.original_price - item.discounted_price) /
+                          item.original_price) *
+                          100
+                      )} % 할인`
+                    : null}
                 </DiscountText>
               </PriceWrapper>
             )}
