@@ -9,14 +9,13 @@ import { ROUTE_CONSTANTS } from "@constants/RouteConstants";
 import { useOrderList } from "./hooks/useOrderList";
 import EmptyOrder from "./_components/EmptyOrder";
 import Loading from "@components/loading/Loading";
-import type { RawOrderItem } from "./apis/getOrderList";
-import { toAbsoluteUrl } from "./apis/getOrderList"; 
+import { normalizeOrder, type NormalizedOrderItem } from "./apis/getOrderList"; // ✅ 헬퍼 사용
 
 interface OrderItem {
   id: number;
   name: string;
   price: number;
-  image: string;
+  image: string | React.ComponentType<React.SVGProps<SVGSVGElement>>;
   quantity: number;
 }
 
@@ -28,33 +27,20 @@ const OrderListPage = () => {
   const [orderList, setOrderList] = useState<OrderItem[] | null>(null);
   const navigate = useNavigate();
 
-  const normalize = (item: RawOrderItem): OrderItem => {
-    if (item.type === "menu") {
-      const unit = item.fixed_price ?? item.menu_price ?? 0;
-      const abs = toAbsoluteUrl(item.menu_image);
-      return {
-        id: item.menu_id ?? 0,                  
-        name: item.menu_name ?? "",
-        price: unit,
-        image: abs ?? ACCO,                   
-        quantity: item.quantity,
-      };
-    } else {
-      const unit = item.fixed_price ?? item.set_price ?? 0;
-      const abs = toAbsoluteUrl(item.set_image);
-      return {
-        id: item.set_id ?? 0,  
-        name: item.set_name ?? "",
-        price: unit,
-        image: abs ?? ACCO, 
-        quantity: item.quantity,
-      };
-    }
-  };
-
   useEffect(() => {
     if (orderData?.status === "success" && orderData.data) {
-      const mapped = (orderData.data.orders ?? []).map(normalize);
+      const normalized: NormalizedOrderItem[] =
+        (orderData.data.orders ?? []).map(normalizeOrder);
+
+      // ✅ 이미지 폴백(ACCO) 적용
+      const mapped: OrderItem[] = normalized.map((n) => ({
+        id: n.id,
+        name: n.name,
+        price: n.price,                      // ✅ 이미 fixed_price 우선 반영됨
+        image: n.image ?? ACCO,
+        quantity: n.quantity,
+      }));
+
       setOrderList(mapped);
     } else {
       setOrderList(null);

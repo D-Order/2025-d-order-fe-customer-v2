@@ -1,7 +1,6 @@
 import React from "react";
 import * as S from "../OrderListPage.styled";
-// ⬇️ SVGR 사용: Vite에서 보통 `?react`(또는 `?component`)를 붙여 import 합니다.
-import MenuLine from "@assets/images/menuLine.svg?react";
+import menuLine from "@assets/images/menuLine.svg";
 
 type SvgComp = React.ComponentType<React.SVGProps<SVGSVGElement>>;
 
@@ -43,8 +42,8 @@ const OrderListItems = ({ name, price, quantity, image }: OrderItemProps) => {
       </S.ItemWrapper>
 
       {/* 구분선도 SVGR 컴포넌트로 렌더 */}
-      <MenuLine style={{ width: "100%" }} aria-hidden />
-    </>
+      <img style={{ width: "100%" }} src={menuLine} alt="메뉴 구분선" />
+    </> 
   );
 };
 

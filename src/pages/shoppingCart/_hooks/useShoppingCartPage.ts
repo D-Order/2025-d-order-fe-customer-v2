@@ -231,7 +231,7 @@ const useShoppingCartPage = () => {
   };
 
   // 계좌 페이지 이동
-  const Pay = async (code?: string) => {
+  const Pay = async (price: number, code?: string) => {
     try {
       await instance.post(
         "api/v2/tables/call_staff/",
@@ -250,24 +250,12 @@ const useShoppingCartPage = () => {
 
         return;
       }
-      await instance.post(
-        "api/v2/cart/apply-coupon/",
-        {
-          coupon_code: code,
-          table_num,
-        },
-        {
-          headers: {
-            "Booth-ID": boothId,
-          },
-        }
-      );
 
       setIsSendMoneyModal(false);
     } catch (err) {
       console.log(err);
     } finally {
-      navigate(`${ROUTE_CONSTANTS.STAFFCODE}`);
+      navigate(`${ROUTE_CONSTANTS.STAFFCODE}?code=${code}?price=${price}`);
     }
   };
 
