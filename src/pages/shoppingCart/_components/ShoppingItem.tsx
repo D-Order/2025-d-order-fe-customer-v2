@@ -40,12 +40,23 @@ const ShoppingItem = ({
           </div>
 
           <div className="contentWrapper">
-            <PriceText>
-              {item.menu_price
-                ? item.menu_price.toLocaleString("ko-KR")
-                : item.discounted_price.toLocaleString("ko-KR")}
-              원
-            </PriceText>
+            {item.menu_price ? (
+              <PriceText>{item.menu_price.toLocaleString("ko-KR")}</PriceText>
+            ) : (
+              <PriceWrapper>
+                <PriceText>
+                  {item.discounted_price.toLocaleString("ko-KR")}
+                </PriceText>
+                <DiscountText>
+                  {Math.round(
+                    ((item.original_price - item.discounted_price) /
+                      item.original_price) *
+                      100
+                  )}
+                  % 할인
+                </DiscountText>
+              </PriceWrapper>
+            )}
             <AmountWrapper>
               <button onClick={onDecrease} disabled={item.quantity === 1}>
                 <img
@@ -140,10 +151,20 @@ const ItemText = styled.p`
   ${({ theme }) => theme.fonts.Bold16}
 `;
 
+const PriceWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+`;
 const PriceText = styled.p`
   color: ${({ theme }) => theme.colors.Black01};
   ${({ theme }) => theme.fonts.SemiBold14}
   opacity: 0.6;
+`;
+
+const DiscountText = styled.p`
+  color: ${({ theme }) => theme.colors.Orange01};
+  ${({ theme }) => theme.fonts.SemiBold14};
 `;
 
 const AmountText = styled.p`
