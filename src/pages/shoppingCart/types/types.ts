@@ -11,6 +11,7 @@ export interface Menu {
   menu_image?: string;
   menu_name: string;
   menu_price: number;
+  min_menu_amount: number;
   discounted_price: number;
   original_price: number;
   quantity: number;
