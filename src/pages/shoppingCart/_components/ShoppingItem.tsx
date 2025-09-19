@@ -73,8 +73,9 @@ const ShoppingItem = ({
               <button
                 onClick={onIncrease}
                 disabled={
-                  item.quantity === item.menu_amount ||
-                  item.quantity === item.min_menu_amount
+                  item.quantity === item.menu_amount
+
+                  // ||item.quantity === item.min_menu_amount
                 }
               >
                 <img
