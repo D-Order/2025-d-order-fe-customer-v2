@@ -255,7 +255,7 @@ const useShoppingCartPage = () => {
     } catch (err) {
       console.log(err);
     } finally {
-      navigate(`${ROUTE_CONSTANTS.STAFFCODE}?code=${code}?price=${price}`);
+      navigate(`${ROUTE_CONSTANTS.STAFFCODE}?code=${code}&price=${price}`);
     }
   };
 
