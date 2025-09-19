@@ -8,6 +8,7 @@ import Loading from "../assets/icons/loadingSpinner.svg";
 import LogoPng from "../assets/icons/Logo.png";
 import backIcon from "@assets/icons/left.svg";
 import CouponIcon from "@assets/icons/Currency.svg";
+import CoponIconPercent from "@assets/icons/currencyPercent.png";
 import Xicon from "@assets/icons/xIcon2.svg";
 
 export const IMAGE_CONSTANTS = {
@@ -21,5 +22,6 @@ export const IMAGE_CONSTANTS = {
   LOGOPNG: LogoPng,
   BACKICON: backIcon,
   COUPONICON: CouponIcon,
+  COUPONICONPERCENT: CoponIconPercent,
   XICON: Xicon,
 };
