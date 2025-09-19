@@ -1,13 +1,13 @@
-// staffCode/hooks/useStaffCodeVerification.ts
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTE_CONSTANTS } from "@constants/RouteConstants";
 
-import { verifyStaffCode } from "../_api/StaffCodeAPI";
+import { createOrderWithStaffCode } from "../_api/StaffCodeAPI";
 import { StaffCodeInputRef } from "../_components/StaffCodeInput";
 
 type Options = {
   couponCode?: string;
+  cartId?: number | string;
 };
 
 export const useStaffCodeVerification = (options?: Options) => {
@@ -16,9 +16,7 @@ export const useStaffCodeVerification = (options?: Options) => {
 
   const [isVerifying, setIsVerifying] = useState(false);
   const [showError, setShowError] = useState(false);
-  const verifiedRef = useRef(false); // 중복 완료 가드
-  // hooks 적용 확인 콘솔
-  console.log("[HOOK] options in useStaffCodeVerification =", options);
+  const verifiedRef = useRef(false);
 
   const resetErrorAndCode = () => {
     setShowError(false);
@@ -26,17 +24,19 @@ export const useStaffCodeVerification = (options?: Options) => {
   };
 
   const handleCodeVerification = async (code: string) => {
-    if (verifiedRef.current) return;   // 이미 성공 처리됨
-    if (isVerifying) return;           // 중복 호출 방지
-    if (!/^\d{4}$/.test(code)) return; // 4자리 숫자 유효성
+    if (verifiedRef.current) return;
+    if (isVerifying) return;
+    if (!/^\d{4}$/.test(code)) return;
 
     setIsVerifying(true);
     try {
-      const isValid = await verifyStaffCode(code, {
-        couponCode: options?.couponCode, // ✅ 쿠폰 코드 동봉(있을 때만)
+      // ✅ 직원코드로 '주문 생성' (POST /tables/orders/order_check/)
+      const ok = await createOrderWithStaffCode(code, {
+        couponCode: options?.couponCode,
+        cartId: options?.cartId,
       });
 
-      if (isValid) {
+      if (ok) {
         verifiedRef.current = true;
         navigate(ROUTE_CONSTANTS.ORDERCOMPLETE);
       } else {
