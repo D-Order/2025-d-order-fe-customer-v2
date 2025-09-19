@@ -16,92 +16,109 @@ const StaffCodePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ URL 파라미터 파싱 (price, coupon_code)
-    const { priceFromQuery, couponCodeFromQuery } = useMemo(() => {
+  // ✅ URL 파라미터 파싱 (price, coupon_code, cart_id)
+  const {
+    priceFromQuery,
+    couponCodeFromQuery,
+    cartIdFromQuery,
+  } = useMemo(() => {
     const params = new URLSearchParams(location.search);
-    const priceParam = params.get("price");
 
-    // ✅ 쿠폰 파라미터 다중 허용: coupon_code > code > coupon
+    // price
+    const priceParam = params.get("price");
+    const price =
+      priceParam && !Number.isNaN(parseInt(priceParam, 10))
+        ? parseInt(priceParam, 10)
+        : null;
+
+    // coupon: coupon_code > code > coupon (대소문자 변형 허용)
     const rawCoupon =
       params.get("coupon_code") ||
       params.get("code") ||
       params.get("coupon") ||
-      undefined;
-
-    // 혹시 대문자 등 변형에 대비
-    const rawCouponCase =
-      rawCoupon ||
       params.get("COUPON_CODE") ||
       params.get("CODE") ||
       params.get("COUPON") ||
       undefined;
+    const coupon = rawCoupon ? String(rawCoupon).trim() : undefined;
 
-    // 안전한 문자열로 정리
-    const coupon = rawCouponCase ? String(rawCouponCase).trim() : undefined;
+    // cart_id: cart_id > cartId > cid (대소문자 변형 허용)  ← ★ 필수
+    const rawCart =
+      params.get("cart_id") ||
+      params.get("cartId") ||
+      params.get("cid") ||
+      params.get("CART_ID") ||
+      undefined;
+    const cartIdNum =
+      rawCart && !Number.isNaN(Number(rawCart)) ? Number(rawCart) : undefined;
 
-    // // ✅ 보너스: 있으면 localStorage에도 저장 (백업 루트)
-    // if (coupon) {
-    //   try {
-    //     localStorage.setItem("coupon_code", coupon);
-    //   } catch {}
-    // }
+    // ✅ 백업 저장: API가 URL/로컬에서 회수 가능하도록
+    try {
+      if (coupon) localStorage.setItem("coupon_code", coupon);
+      if (cartIdNum !== undefined)
+        localStorage.setItem("cart_id", String(cartIdNum));
+    } catch {}
 
     return {
-      priceFromQuery: priceParam ? parseInt(priceParam, 10) : null,
+      priceFromQuery: price,
       couponCodeFromQuery: coupon,
+      cartIdFromQuery: cartIdNum,
     };
   }, [location.search]);
 
-  // 훅 호출은 그대로 + couponCodeFromQuery
+  // ✅ 직원 코드 검증 훅 (쿠폰/카트 정보 전달)
   const {
     codeInputRef,
     showError,
     handleCodeVerification,
     handleInputChange,
-  } = useStaffCodeVerification({ couponCode: couponCodeFromQuery });
+  } = useStaffCodeVerification({
+    couponCode: couponCodeFromQuery,
+    cartId: cartIdFromQuery,
+  });
 
-  // 디버깅 로그
+  // 디버깅 로그 (원하면 유지)
   console.log("[PAGE] location.search =", location.search);
   console.log("[PAGE] priceFromQuery =", priceFromQuery);
   console.log("[PAGE] couponCodeFromQuery =", couponCodeFromQuery);
-  console.log("[PAGE] pass couponCode to hook =", couponCodeFromQuery);
-
+  console.log("[PAGE] cartIdFromQuery =", cartIdFromQuery);
 
   const [tableInfo, setTableInfo] = useState<TableOrderInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 테이블 정보 로드
+  // 테이블 정보 로드 (표시용 GET은 기존대로 table_num 사용)
   useEffect(() => {
-    const fetchTableInfo = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+  const fetchTableInfo = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        const info = await fetchTableOrderInfo();
-        if (!info) {
-          setError("진행 중인 주문 정보가 없습니다. 주문 후 다시 시도해주세요.");
-          return;
-        }
+      const info = await fetchTableOrderInfo({
+        couponCode: couponCodeFromQuery ?? undefined,
+        cartId: cartIdFromQuery,
+      });
 
-        const finalPrice =
-          typeof priceFromQuery === "number" && !Number.isNaN(priceFromQuery)
-            ? priceFromQuery
-            : info.totalPrice;
-
-        setTableInfo({
-          ...info,
-          totalPrice: finalPrice,
-        });
-      } catch {
-        setError("테이블 정보를 가져오는데 실패했습니다. 다시 시도해주세요.");
-      } finally {
-        setLoading(false);
+      if (!info) {
+        setError("진행 중인 주문 정보가 없습니다. 주문 후 다시 시도해주세요.");
+        return;
       }
-    };
 
-    fetchTableInfo();
-  }, [priceFromQuery]);
+      const finalPrice =
+        typeof priceFromQuery === "number" && !Number.isNaN(priceFromQuery)
+          ? priceFromQuery
+          : info.totalPrice;
+
+      setTableInfo({ ...info, totalPrice: finalPrice });
+    } catch (e: any) {
+      setError(e?.message || "테이블 정보를 가져오는데 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchTableInfo();
+}, [priceFromQuery, couponCodeFromQuery, cartIdFromQuery]);
 
   if (loading) return <Loading />;
 
@@ -148,7 +165,9 @@ const StaffCodePage = () => {
 
           <StaffCodeInput
             ref={codeInputRef}
-            onComplete={(codeArray) => handleCodeVerification(codeArray.join(""))}
+            onComplete={(codeArray) =>
+              handleCodeVerification(codeArray.join(""))
+            }
             onChange={handleInputChange}
           />
 
