@@ -1,6 +1,6 @@
 import * as S from "./StaffCodePage.styled";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 import { ROUTE_CONSTANTS } from "@constants/RouteConstants";
@@ -17,7 +17,7 @@ import { useStaffCodeVerification } from "./hooks/useStaffCodeVerification";
 
 const StaffCodePage = () => {
   const navigate = useNavigate();
-
+  const location = useLocation();
   const { codeInputRef, showError, handleCodeVerification, handleInputChange } =
     useStaffCodeVerification();
 
@@ -33,6 +33,10 @@ const StaffCodePage = () => {
         setLoading(true);
         setError(null);
 
+        // URL 쿼리 파라미터에서 price 값 파싱
+        const queryParams = new URLSearchParams(location.search);
+        const priceFromQuery = queryParams.get("price");
+
         const info = await fetchTableOrderInfo();
 
         if (!info) {
@@ -41,8 +45,16 @@ const StaffCodePage = () => {
           );
           return;
         }
+        // 쿼리에서 가져온 price가 있으면 API의 totalPrice를 덮어쓰기
+        const finalPrice = priceFromQuery
+          ? parseInt(priceFromQuery, 10)
+          : info.totalPrice;
 
-        setTableInfo(info);
+        setTableInfo({
+          ...info,
+          totalPrice: finalPrice,
+        });
+        // setTableInfo(info);
       } catch (error) {
         setError("테이블 정보를 가져오는데 실패했습니다. 다시 시도해주세요.");
       } finally {
@@ -51,7 +63,7 @@ const StaffCodePage = () => {
     };
 
     fetchTableInfo();
-  }, []);
+  }, [location.search]);
 
   if (loading) {
     return <Loading />;
