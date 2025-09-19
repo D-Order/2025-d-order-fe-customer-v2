@@ -33,4 +33,15 @@ export const CartService = {
     );
     return res.data;
   },
+  exists: async (table_num: number): Promise<boolean> => {
+    const boothId = localStorage.getItem('boothId');
+    const res = await instance.get(
+      `/api/v2/cart/exists/?table_num=${table_num}`,
+      {
+        headers: { 'Booth-ID': boothId },
+      }
+    );
+    console.log(res);
+    return res.data?.data?.has_cart_items ?? false;
+  },
 };
