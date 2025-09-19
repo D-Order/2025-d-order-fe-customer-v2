@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 // import { MenuListService } from '../_services/MenuListService';
 import { ROUTE_CONSTANTS } from '@constants/RouteConstants';
 import { MENULISTPAGE_CONSTANTS } from '../_constants/menulistpageconstants';
-import { useShoppingCartStore } from '@stores/shoppingCartStore';
+// import { useShoppingCartStore } from '@stores/shoppingCartStore';
 // import { MenuListPageService } from '../_Dummy/MenuListPageService';
 import { MenuListService } from '../_services/MenuListService';
 import { CartService } from '../_services/CartService';
@@ -37,8 +37,7 @@ interface SetMenuItem extends BaseMenuItem {
 const useMenuListPage = () => {
   const navigate = useNavigate();
 
-  const cart = useShoppingCartStore((state) => state.cart);
-  const cartCount = cart.length;
+  const [cartCount, setCartCount] = useState<boolean>(false);
 
   const [menuItems, setMenuItems] = useState<any[]>([]);
   const [boothName, setBoothName] = useState<string>('');
@@ -73,6 +72,24 @@ const useMenuListPage = () => {
   const isMax2 = selectedItem ? count >= selectedItem.quantity : false;
 
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const initCartState = async () => {
+      try {
+        const tableId = localStorage.getItem('tableNum');
+        if (!tableId) return;
+        const tableNumber = parseInt(tableId, 10);
+        if (Number.isNaN(tableNumber)) return;
+
+        const hasItems = await CartService.exists(tableNumber);
+        setCartCount(hasItems);
+      } catch (e) {
+        console.error('cart exists check failed', e);
+        setCartCount(false);
+      }
+    };
+    initCartState();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
