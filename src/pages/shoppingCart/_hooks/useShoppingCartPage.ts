@@ -27,6 +27,7 @@ const useShoppingCartPage = () => {
   );
   const boothId = localStorage.getItem("boothId");
   const table_num = localStorage.getItem("tableNum");
+  const cart_id = localStorage.getItem("cartId");
 
   // 장바구니 조회
   const FetchShoppingItems = async () => {
@@ -37,6 +38,7 @@ const useShoppingCartPage = () => {
         },
         params: {
           table_num,
+          cart_id,
         },
       });
       const data = response.data;
@@ -88,6 +90,7 @@ const useShoppingCartPage = () => {
           type,
           id,
           quantity,
+          cart_id,
         },
         {
           headers: {
@@ -209,6 +212,7 @@ const useShoppingCartPage = () => {
         },
         params: {
           table_num,
+          cart_id,
         },
       });
       setAccountInfo(response.data.data);
@@ -237,6 +241,7 @@ const useShoppingCartPage = () => {
         "api/v2/tables/call_staff/",
         {
           table_num,
+          cart_id,
         },
         {
           headers: {
