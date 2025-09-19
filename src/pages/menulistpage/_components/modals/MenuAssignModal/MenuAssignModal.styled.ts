@@ -142,14 +142,20 @@ export const QuantityButton = styled.div<{ disabled?: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
+
   border-radius: 50%;
   font-size: 1.25rem;
-  color: ${({ theme, disabled }) =>
-    disabled ? theme.colors.Black02 : theme.colors.Orange01};
-  background-color: ${({ disabled }) =>
-    disabled ? 'rgba(192, 192, 192, 0.2)' : 'rgba(255, 110, 63, 0.3)'};
+
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
+`;
+
+export const QuantityIconImg = styled.img`
+  width: 28px;
+  height: 28px;
+  display: block;
+  pointer-events: none;
+  user-select: none;
 `;
 
 export const Quantity = styled.div`

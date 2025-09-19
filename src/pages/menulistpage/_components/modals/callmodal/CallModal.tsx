@@ -16,11 +16,10 @@ const CallModal = ({ onClose, tableNum }: CallModalProps) => {
       setLoading(true);
 
       await CallService.callStaff({
-        tableNumber: tableNum, // ✅ 로컬스토리지에서 읽어온 tableNum 전달
-        message: '직원이 필요합니다.', // 기본 메시지
+        tableNumber: tableNum,
+        message: '직원이 필요합니다.',
       });
 
-      alert(`${tableNum}번 테이블에서 직원을 호출했습니다!`);
       onClose();
     } catch (e: any) {
       console.error(e);
