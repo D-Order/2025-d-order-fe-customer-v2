@@ -1,9 +1,6 @@
 import { AxiosError } from "axios";
-
-// @services/instance에서 미리 정의된 인스턴스를 불러와 사용
 import { instance } from "@services/instance";
 
-// API 응답 타입 정의
 export interface OrderCheckGetResponse {
   status: string;
   message: string;
@@ -14,7 +11,6 @@ export interface OrderCheckGetResponse {
   } | null;
 }
 
-// api주문생성에대한 응답타입
 export interface OrderCheckPostResponse {
   status: string;
   code: number;
@@ -25,73 +21,82 @@ export interface OrderCheckPostResponse {
     subtotal: number;
     table_fee: number;
     coupon_discount: number;
-    coupon: string;
+    coupon: string | null;
     booth_total_revenues: number;
   } | null;
 }
 
-// 쿠폰 적용 후 'data' 객체의 상세 정보 타입
-export interface CouponDetails {
-  coupon_name: string;
-  discount_type: "percent" | "amount";
-  discount_value: number;
-  subtotal: number;
-  table_fee: number;
-  total_price_before: number;
-  total_price_after: number;
-}
-
-// 쿠폰 적용 API의 전체 응답 타입
-export interface CouponResponse {
-  status: string;
-  code: number;
-  data: CouponDetails | null;
-}
-
-// 프론트엔드에서 사용하는 직원확인페이지에서 받아와야되는 타입
 export interface TableOrderInfo {
   tableNumber: string;
   seat_count: number;
   totalPrice: number;
 }
 
-// 직원 확인용 비밀번호입력 후 주문생성되는 post api
-export const verifyStaffCode = async (code: string): Promise<boolean> => {
+export const verifyStaffCode = async (
+  code: string,
+  options?: { couponCode?: string }
+): Promise<boolean> => {
   try {
     const tableNum = localStorage.getItem("tableNum");
     const boothId = localStorage.getItem("boothId");
 
+    // 1) 훅 옵션
+    let coupon = options?.couponCode?.trim();
+
+    // 2) URL에서 재확인 (coupon_code > code > coupon, 대소문자 변형 포함)
+    if (!coupon && typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      coupon =
+        params.get("coupon_code") ||
+        params.get("code") ||
+        params.get("coupon") ||
+        params.get("COUPON_CODE") ||
+        params.get("CODE") ||
+        params.get("COUPON") ||
+        undefined;
+      if (coupon) coupon = coupon.trim();
+    }
+
+    // 3) localStorage 백업
+    if (!coupon) {
+      const fromLS = localStorage.getItem("coupon_code");
+      if (fromLS) coupon = fromLS.trim();
+    }
+
+    const body: Record<string, any> = {
+      password: code,
+      table_num: tableNum,
+    };
+    if (coupon) body.coupon_code = coupon;
+
+    console.log("[API] request body =", body);
+    console.log("[API] headers.Booth-ID =", boothId);
+
     const response = await instance.post<OrderCheckPostResponse>(
       "/api/v2/tables/orders/order_check/",
-      {
-        password: code,
-        table_num: tableNum,
-      },
+      body,
       {
         headers: {
-          "Booth-Id": boothId,
+          "Booth-ID": boothId,
         },
       }
     );
 
-    // status가 success인지 확인하여 성공 여부 반환
     return response.data.status === "success";
-  } catch (error: unknown) {
-    // 401 에러는 비밀번호가 올바르지 않은 경우
+  } catch (error : unknown) {
     if (
       error instanceof AxiosError &&
       error.response &&
       error.response.status === 401
     ) {
+      // 비밀번호 불일치
       return false;
     }
-
-    // 기타 에러도 검증 실패로 처리
     return false;
   }
 };
 
-// 테이블 주문 정보 확인 API
+// 진행 중 주문/장바구니 합산 정보 확인 (GET) — 그대로 유지
 export const fetchTableOrderInfo = async (): Promise<TableOrderInfo | null> => {
   try {
     const tableNum = localStorage.getItem("tableNum");
@@ -100,15 +105,11 @@ export const fetchTableOrderInfo = async (): Promise<TableOrderInfo | null> => {
     const response = await instance.get<OrderCheckGetResponse>(
       "/api/v2/tables/orders/order_check/",
       {
-        params: {
-          table_num: tableNum,
-        },
-        headers: {
-          "Booth-Id": boothId,
-        },
+        params: { table_num: tableNum },
+        headers: { "Booth-Id": boothId },
       }
     );
-    console.log("API 응답:", response);
+
     if (response.data.status === "success" && response.data.data) {
       return {
         tableNumber: tableNum || "",
@@ -116,10 +117,8 @@ export const fetchTableOrderInfo = async (): Promise<TableOrderInfo | null> => {
         seat_count: response.data.data.seat_count,
       };
     }
-
     return null;
   } catch (error: unknown) {
-    // 404 에러의 경우는 진행 중인 주문이 없다는 예상된 에러이므로 null 반환
     if (
       error instanceof AxiosError &&
       error.response &&
@@ -127,8 +126,6 @@ export const fetchTableOrderInfo = async (): Promise<TableOrderInfo | null> => {
     ) {
       return null;
     }
-
-    // 기타 예상치 못한 에러는 throw
     throw error;
   }
 };
