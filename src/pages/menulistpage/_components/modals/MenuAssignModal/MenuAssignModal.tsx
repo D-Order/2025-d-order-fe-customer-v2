@@ -1,6 +1,10 @@
 import * as S from './MenuAssignModal.styled';
 
 import { MENULISTPAGE_CONSTANTS } from '../../../_constants/menulistpageconstants';
+import modal_minus from '../../../../../assets/icons/modal_minus.svg';
+import modal_no_minus from '../../../../../assets/icons/modal_no_minus.svg';
+import modal_no_plus from '../../../../../assets/icons/modal_no_plus.svg';
+import modal_plus from '../../../../../assets/icons/modal_plus.svg';
 
 interface MenuAssignModalProps {
   item: {
@@ -9,6 +13,7 @@ interface MenuAssignModalProps {
     quantity: number;
     category: string;
     originprice?: number;
+    description: string;
   };
   count: number;
   isMin: boolean;
@@ -35,6 +40,9 @@ const MenuAssignModal = ({
 }: MenuAssignModalProps) => {
   const isSetMenu = item.category === 'set';
   const price = Number(item?.price ?? 0);
+
+  const minusIcon = isMin ? modal_no_minus : modal_minus;
+  const plusIcon = isMax ? modal_no_plus : modal_plus;
   return (
     <S.Wrapper>
       <S.BackWrap onClick={onClose} />
@@ -45,6 +53,7 @@ const MenuAssignModal = ({
           <S.Row>
             <S.Col2>
               <S.Title>{item.name}</S.Title>
+              <S.Price>{item.description}</S.Price>
               <S.Row3>
                 <S.Price>
                   {item.price.toLocaleString()}
@@ -55,7 +64,7 @@ const MenuAssignModal = ({
                     {Math.round(
                       ((item.originprice - price) / item.originprice) * 100
                     )}
-                    %
+                    % 할인
                   </S.Discount>
                 ) : (
                   <S.Discount></S.Discount>
@@ -69,11 +78,11 @@ const MenuAssignModal = ({
                 {MENULISTPAGE_CONSTANTS.ASSIGNMODAL.TEXT.AMOUNT}
               </S.QuantityText>
               <S.QuantityButton disabled={isMin} onClick={onDecrease}>
-                {MENULISTPAGE_CONSTANTS.ASSIGNMODAL.TEXT.MINUS}
+                <S.QuantityIconImg src={minusIcon} alt="수량 감소" />
               </S.QuantityButton>
               <S.Quantity>{count}</S.Quantity>
               <S.QuantityButton disabled={isMax} onClick={onIncrease}>
-                {MENULISTPAGE_CONSTANTS.ASSIGNMODAL.TEXT.PLUS}
+                <S.QuantityIconImg src={plusIcon} alt="수량 증가" />
               </S.QuantityButton>
             </S.QuantityBox>
           </S.Row2>

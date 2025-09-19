@@ -7,7 +7,7 @@ import CallModal from '../modals/callmodal/CallModal';
 interface MenuListHeaderProps {
   onNavigate: () => void;
   onReceipt: () => void;
-  cartCount: number;
+  cartCount: boolean;
 }
 
 const MenuListHeader = ({
@@ -35,7 +35,7 @@ const MenuListHeader = ({
             src={MENULISTPAGE_CONSTANTS.HEADER.IMAGE.CART}
             onClick={onNavigate}
           />
-          {cartCount > 0 && <S.Badge />}
+          {cartCount && <S.Badge />}
         </S.IconWrap>
       </S.Icons>
       {ismodalOpen && (
