@@ -21,6 +21,7 @@ const ShoppingCartPage = () => {
   const [couponCode, setCouponCode] = useState("");
   const [usingCoupon, setUsingCoupon] = useState("");
   const [couponName, setCouponName] = useState("");
+  const [couponType, setCouponType] = useState("");
   const {
     shoppingItemResponse,
     isConfirmModal,
@@ -157,6 +158,8 @@ const ShoppingCartPage = () => {
             couponName={couponName}
             setCouponName={setCouponName}
             setUsingCoupon={setUsingCoupon}
+            setCouponType={setCouponType}
+            couponType={couponType}
           />
         </DarkWrapper>
       )}
