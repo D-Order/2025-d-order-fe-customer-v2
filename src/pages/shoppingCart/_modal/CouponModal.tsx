@@ -13,6 +13,8 @@ interface CouponModalProps {
   couponName: string;
   setCouponName: React.Dispatch<SetStateAction<string>>;
   setUsingCoupon: React.Dispatch<SetStateAction<string>>;
+  setCouponType: React.Dispatch<SetStateAction<string>>;
+  couponType: string;
 }
 
 const CouponModal = ({
@@ -25,6 +27,8 @@ const CouponModal = ({
   couponName,
   setCouponName,
   setUsingCoupon,
+  setCouponType,
+  couponType,
 }: CouponModalProps) => {
   const handleApply = async () => {
     if (!couponCode.trim()) return;
@@ -34,6 +38,7 @@ const CouponModal = ({
       const result = await CheckCoupon(couponCode);
       setCouponName(result.data.coupon_name);
       setUsingCoupon(couponCode);
+      setCouponType(result.data.discount_type);
       setCouponCode("");
       onClose();
     } catch (error: any) {
@@ -76,7 +81,11 @@ const CouponModal = ({
             <SubTitle>현재 적용된 쿠폰</SubTitle>
             <CouponWraper>
               <img
-                src={IMAGE_CONSTANTS.COUPONICON}
+                src={
+                  couponType === "percent"
+                    ? IMAGE_CONSTANTS.COUPONICONPERCENT
+                    : IMAGE_CONSTANTS.COUPONICON
+                }
                 alt="쿠폰 이미지"
                 id="coupon"
               />
