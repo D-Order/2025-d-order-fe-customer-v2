@@ -30,6 +30,7 @@ const LoginPage = () => {
   useEffect(() => {
     if (boothId) {
       localStorage.setItem("boothId", boothId);
+      localStorage.removeItem("cartId");
     }
   }, [boothId]);
 
