@@ -304,6 +304,20 @@ const useMenuListPage = () => {
 
   const [errorToast, setErrorToast] = useState<string | null>(null);
 
+  const refreshCartCount = async () => {
+    try {
+      const cid = CartService.getLocalCartId();
+      if (cid == null) {
+        setCartCount(false);
+        return;
+      }
+      const has = await CartService.exists(cid);
+      setCartCount(has);
+    } catch (e) {
+      console.error('refreshCartCount failed', e);
+    }
+  };
+
   const handleSubmitItem = async () => {
     if (!selectedItem) return;
     if (!tableNum) {
@@ -324,6 +338,8 @@ const useMenuListPage = () => {
         id: selectedItem.id,
         quantity: count,
       });
+
+      refreshCartCount();
 
       // 기존 UX 흐름 유지
       setIsClosing(true);
