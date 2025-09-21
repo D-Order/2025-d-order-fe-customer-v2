@@ -7,6 +7,7 @@ const CART_ID_KEY = 'cartId';
 
 function getCartId(): number | null {
   const v = localStorage.getItem(CART_ID_KEY);
+
   const n = v ? Number(v) : NaN;
   return Number.isFinite(n) ? n : null;
 }
