@@ -73,15 +73,15 @@ const ShoppingItem = ({
               <button
                 onClick={onIncrease}
                 disabled={
-                  item.quantity === item.menu_amount
-
-                  // ||item.quantity === item.min_menu_amount
+                  item.quantity === item.menu_amount ||
+                  item.menu_name === "테이블 이용료(테이블당)"
                 }
               >
                 <img
                   src={
                     item.quantity === item.menu_amount ||
-                    item.quantity === item.min_menu_amount
+                    item.quantity === item.min_menu_amount ||
+                    item.menu_name === "테이블 이용료(테이블당)"
                       ? PlusDisable
                       : plus
                   }
