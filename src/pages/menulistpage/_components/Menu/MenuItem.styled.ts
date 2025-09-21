@@ -53,6 +53,11 @@ export const Col2 = styled.div`
 export const ItemName = styled.div`
   ${({ theme }) => theme.fonts.Bold14};
   color: ${({ theme }) => theme.colors.Black01};
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 `;
 
 export const ItemDes = styled.div<{ $soldout?: boolean; disabled?: boolean }>`
@@ -60,11 +65,23 @@ export const ItemDes = styled.div<{ $soldout?: boolean; disabled?: boolean }>`
     $soldout ? theme.fonts.ExtraBold12 : theme.fonts.SemiBold12};
   color: ${({ theme, $soldout }) =>
     $soldout ? theme.colors.Orange01 : theme.colors.Black01};
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  word-break: keep-all;
+
+  width: 100%;
 `;
 
 export const ItemPrice = styled.div`
   ${({ theme }) => theme.fonts.Bold12};
   color: ${({ theme }) => theme.colors.Black01};
+
+  white-space: nowrap;
 `;
 
 export const ItemPrice_deco = styled.div`
@@ -72,9 +89,13 @@ export const ItemPrice_deco = styled.div`
   color: ${({ theme }) => theme.colors.Black01};
 
   text-decoration-line: line-through;
+
+  white-space: nowrap;
 `;
 
 export const Discount = styled.div`
   ${({ theme }) => theme.fonts.Bold12};
   color: ${({ theme }) => theme.colors.Orange01};
+
+  white-space: nowrap;
 `;
