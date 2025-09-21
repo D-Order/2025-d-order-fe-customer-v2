@@ -9,6 +9,7 @@ import { MENULISTPAGE_CONSTANTS } from '../_constants/menulistpageconstants';
 import { MenuListService } from '../_services/MenuListService';
 import { CartService } from '../_services/CartService';
 import { BoothID } from '../_services/BoothID';
+import { sortByPriceDesc } from '../_utils/sortByPrice';
 
 const SCROLL_OFFSET = 120;
 
@@ -76,12 +77,12 @@ const useMenuListPage = () => {
   useEffect(() => {
     const initCartState = async () => {
       try {
-        const tableId = localStorage.getItem('tableNum');
-        if (!tableId) return;
-        const tableNumber = parseInt(tableId, 10);
-        if (Number.isNaN(tableNumber)) return;
+        const cartId = localStorage.getItem('cartId');
+        if (!cartId) return;
+        const cartNumber = parseInt(cartId, 10);
+        if (Number.isNaN(cartNumber)) return;
 
-        const hasItems = await CartService.exists(tableNumber);
+        const hasItems = await CartService.exists(cartNumber);
         setCartCount(hasItems);
       } catch (e) {
         console.error('cart exists check failed', e);
@@ -128,7 +129,7 @@ const useMenuListPage = () => {
             price: table?.seat_tax_table ?? seatFeeFromMenus?.menu_price ?? 0,
             imageUrl: seatFeeFromMenus?.menu_image ?? NON_IMG,
             quantity: 1, // 테이블당 1회
-            soldOut: false,
+            soldOut: table.is_seatfee_soldout ?? false,
             category: 'tableFee',
           };
         } else if (table?.seat_type === 'person') {
@@ -141,7 +142,7 @@ const useMenuListPage = () => {
             price: table?.seat_tax_person ?? seatFeeFromMenus?.menu_price ?? 0,
             imageUrl: seatFeeFromMenus?.menu_image ?? NON_IMG,
             quantity: 100, // 인원 기준: 충분히 크게(클라에서 상한 체크)
-            soldOut: false,
+            soldOut: table.is_seatfee_soldout ?? false,
             category: 'tableFee',
           };
         } else if (table?.seat_type === 'none') {
@@ -177,25 +178,29 @@ const useMenuListPage = () => {
         }
 
         // 3) 일반 메뉴 매핑 (seat_fee 제외)
-        const mappedMenus: BaseMenuItem[] = (menus ?? [])
-          .filter((m) => m.menu_category !== 'seat_fee')
-          .map((m) => {
-            const mappedCategory: 'menu' | 'drink' =
-              m.menu_category === '음료' ? 'drink' : 'menu';
-            return {
-              id: m.menu_id,
-              name: m.menu_name,
-              description: m.menu_description,
-              price: m.menu_price,
-              imageUrl: m.menu_image ?? undefined,
-              quantity: m.menu_amount,
-              soldOut: !!m.is_soldout || m.menu_amount <= 0,
-              category: mappedCategory,
-            };
-          });
+        const mappedMenus: BaseMenuItem[] = sortByPriceDesc(
+          (menus ?? []).filter((m) => m.menu_category !== 'seat_fee'),
+          (m) => m.menu_price
+        ).map((m) => {
+          const mappedCategory: 'menu' | 'drink' =
+            m.menu_category === '음료' ? 'drink' : 'menu';
+          return {
+            id: m.menu_id,
+            name: m.menu_name,
+            description: m.menu_description,
+            price: m.menu_price,
+            imageUrl: m.menu_image ?? undefined,
+            quantity: m.menu_amount,
+            soldOut: !!m.is_soldout || m.menu_amount <= 0,
+            category: mappedCategory,
+          };
+        });
 
         // 4) 세트 메뉴 매핑
-        const mappedSets: SetMenuItem[] = (setmenus ?? []).map((s) => ({
+        const mappedSets: SetMenuItem[] = sortByPriceDesc(
+          setmenus ?? [],
+          (s) => s.set_price
+        ).map((s) => ({
           id: s.set_menu_id,
           name: s.set_name,
           description: s.set_description,
@@ -214,7 +219,9 @@ const useMenuListPage = () => {
           ...mappedMenus,
         ];
 
-        setMenuItems(allItems);
+        const allItemsSorted = sortByPriceDesc(allItems, (i) => i.price);
+
+        setMenuItems(allItemsSorted);
         const boothName = await BoothID.getName(boothIdNumber);
         setBoothName(boothName);
       } catch (e) {

@@ -5,6 +5,7 @@ export type ApiSeat = {
   seat_type: 'table' | 'person' | 'none' | string;
   seat_tax_table?: number;
   seat_tax_person?: number;
+  is_seatfee_soldout?: boolean;
 };
 
 export type ApiMenu = {
@@ -44,10 +45,11 @@ export type BoothAllMenusResponse = {
 };
 
 export const MenuListService = {
-  // ✅ 실제 스펙에 맞춘 GET
   fetchAllMenus: async (boothId: number) => {
+    const tableNum = localStorage.getItem('tableNum') || '';
+
     const res = await instance.get<BoothAllMenusResponse>(
-      `/api/v2/booth/${boothId}/all-menus/`
+      `/api/v2/booth/${boothId}/all-menus/?table_num=${tableNum}`
     );
     console.log(res);
     return res.data.data; // { booth_id, table, menus, setmenus }
