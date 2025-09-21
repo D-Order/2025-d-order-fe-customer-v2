@@ -110,6 +110,11 @@ const useShoppingCartPage = () => {
     const { type, currentItem } = getItemContext(id);
     if (!currentItem) return;
 
+    // 테이블 이용료 메뉴는 수량 증가 막기
+    if (currentItem.menu_name === "테이블 이용료(테이블당)") {
+      return;
+    }
+
     const newQuantity = currentItem.quantity + 1;
 
     setShoppingItemResponse((prev) => {
