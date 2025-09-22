@@ -52,7 +52,11 @@ const MenuItem = ({ item, onClick }: MenuItemProps) => {
         <S.Col>
           <S.ItemName>{item.name}</S.ItemName>
           <S.ItemDes $soldout={item.soldOut}>
-            {item.soldOut ? 'SOLD OUT' : item.description}
+            {item.soldOut
+              ? item.category === 'tableFee'
+                ? '입금 되었습니다'
+                : 'SOLD OUT'
+              : item.description}
           </S.ItemDes>
         </S.Col>
       </S.Row>
