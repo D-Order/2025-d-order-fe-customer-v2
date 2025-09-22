@@ -54,9 +54,6 @@ export const ItemName = styled.div`
   ${({ theme }) => theme.fonts.Bold14};
   color: ${({ theme }) => theme.colors.Black01};
 
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   width: 100%;
 `;
 
