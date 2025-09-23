@@ -3,7 +3,7 @@ import { IMAGE_CONSTANTS } from "@constants/ImageConstants";
 import WhiteLogo from "@assets/images/whiteLogo.svg?react";
 import ContactBoothCard from "./_components/ContactBoothCard";
 import NoContactBoothCard from "./_components/NoContactBoothCard";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BoothAdItem, fetchBoothAds } from "./service/BoothInfo";
 import { NO_CONTACT_BOOTH_INFO } from "./const/noContactBoothInfo";
 type Status = "AVAILABLE" | "SOON" | "FULL";
@@ -54,6 +54,7 @@ const AdPage = () => {
   const [booths, setBooths] = useState<BoothAdItem[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [isReloading, setIsReloading] = useState<boolean>(false);
+  const boothWrapperRef = useRef<HTMLDivElement>(null);
 
   const loadBooths = useCallback(async () => {
     setLoading(true);
@@ -69,6 +70,11 @@ const AdPage = () => {
   useEffect(() => {
     loadBooths();
   }, [loadBooths]);
+
+  // 날짜 변경 시 리스트 스크롤을 맨 위로 초기화하여 오버레이 위치가 어긋나지 않도록 처리
+  useEffect(() => {
+    boothWrapperRef.current?.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [selectedDate]);
 
   const onReload = () => {
     if (isReloading || loading) return;
@@ -143,7 +149,7 @@ const AdPage = () => {
           ))}
         </DateWrapper>
 
-        <BoothWrapper $blocked={!isSelectedDateActive}>
+        <BoothWrapper ref={boothWrapperRef} $blocked={!isSelectedDateActive}>
           <ContactBoothList>
             {!loading &&
               computedBooths.map((b, idx) => (
