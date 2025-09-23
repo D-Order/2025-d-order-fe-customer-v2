@@ -1,9 +1,9 @@
 // src/pages/MenuListPage/_services/CartService.ts
-import { instance } from '@services/instance';
+import { instance } from "@services/instance";
 
-type CartType = 'menu' | 'set_menu' | 'seat_fee';
+type CartType = "menu" | "set_menu" | "seat_fee";
 
-const CART_ID_KEY = 'cartId';
+const CART_ID_KEY = "cartId";
 
 function getCartId(): number | null {
   const v = localStorage.getItem(CART_ID_KEY);
@@ -29,7 +29,7 @@ export const CartService = {
     id?: number;
     quantity: number;
   }) => {
-    const boothId = localStorage.getItem('boothId');
+    const boothId = localStorage.getItem("boothId");
     const cartId = getCartId();
 
     const body: any = {
@@ -40,12 +40,12 @@ export const CartService = {
     if (id !== undefined) body.id = id;
     if (cartId != null) body.cart_id = cartId;
 
-    const res = await instance.post('/api/v2/cart/', body, {
-      headers: { 'Booth-ID': boothId },
+    const res = await instance.post("/api/v2/cart/", body, {
+      headers: { "Booth-ID": boothId },
     });
 
     const returnedCartId: number | undefined = res?.data?.data?.cart_id;
-    if (typeof returnedCartId === 'number') {
+    if (typeof returnedCartId === "number") {
       setCartId(returnedCartId);
     }
 
@@ -53,11 +53,11 @@ export const CartService = {
   },
 
   exists: async (cartId: number): Promise<boolean> => {
-    const boothId = localStorage.getItem('boothId');
+    const boothId = localStorage.getItem("boothId");
     const res = await instance.get(`/api/v2/cart/exists/?cartId=${cartId}`, {
-      headers: { 'Booth-ID': boothId },
+      headers: { "Booth-ID": boothId },
     });
-    console.log(res);
+    // console.log(res);
     return res.data?.data?.has_cart_items ?? false;
   },
 

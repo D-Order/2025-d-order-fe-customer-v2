@@ -26,11 +26,11 @@ export interface OrderCheckPostResponse {
   message: string;
   data: {
     order_id: number;
-    order_amount: number;       // 최종 결제 금액 (쿠폰 반영)
-    subtotal: number;           // 메뉴+세트 금액 (쿠폰 전)
-    table_fee: number;          // 테이블/인당 이용료
-    coupon_discount: number;    // 할인액 (없으면 0)
-    coupon: string | null;      // 적용된 쿠폰 코드 (없으면 null)
+    order_amount: number; // 최종 결제 금액 (쿠폰 반영)
+    subtotal: number; // 메뉴+세트 금액 (쿠폰 전)
+    table_fee: number; // 테이블/인당 이용료
+    coupon_discount: number; // 할인액 (없으면 0)
+    coupon: string | null; // 적용된 쿠폰 코드 (없으면 null)
     booth_total_revenues: number;
     table_num: number;
     cart_id: number;
@@ -109,11 +109,6 @@ export const fetchTableOrderInfo = async (
     if (coupon) params.coupon_code = coupon;
     if (Number.isFinite(maybeCartId)) params.cart_id = maybeCartId;
 
-    console.log("[ORDER_CHECK][GET] /api/v2/tables/orders/order_check/", {
-      headers: { "Booth-ID": boothId },
-      params,
-    });
-
     const response = await instance.get<OrderCheckGetResponse>(
       "/api/v2/tables/orders/order_check/",
       {
@@ -153,11 +148,14 @@ export const createOrderWithStaffCode = async (
   try {
     const boothId = getBoothId();
     if (!boothId) {
-      alert("부스 식별자(Booth-ID)를 찾을 수 없습니다. 부스 선택을 먼저 진행해 주세요.");
+      alert(
+        "부스 식별자(Booth-ID)를 찾을 수 없습니다. 부스 선택을 먼저 진행해 주세요."
+      );
       return false;
     }
 
-    let coupon = options?.couponCode?.toString().trim() || getCouponFromEverywhere();
+    let coupon =
+      options?.couponCode?.toString().trim() || getCouponFromEverywhere();
 
     let cartId: number | undefined;
     if (options?.cartId !== undefined) {
@@ -181,22 +179,15 @@ export const createOrderWithStaffCode = async (
 
     const body: Record<string, any> = {
       password: staffPassword, // 4자리
-      cart_id: cartId,         // 필수
+      cart_id: cartId, // 필수
     };
     if (coupon) body.coupon_code = coupon;
-
-    console.log("[ORDER_CHECK][POST] /api/v2/tables/orders/order_check/", {
-      headers,
-      body,
-    });
 
     const res = await instance.post<OrderCheckPostResponse>(
       "/api/v2/tables/orders/order_check/",
       body,
       { headers }
     );
-
-    console.log("[ORDER_CHECK][POST] ✅ response =", res?.status, res?.data);
 
     // 명세: 성공 시 status=success, code=201, data 포함
     return res.data?.status === "success";
@@ -208,14 +199,21 @@ export const createOrderWithStaffCode = async (
         return false;
       }
       if (status === 400) {
-        alert(error.response?.data?.message || "비밀번호 형식 오류 또는 요청 형식 오류");
+        alert(
+          error.response?.data?.message ||
+            "비밀번호 형식 오류 또는 요청 형식 오류"
+        );
         return false;
       }
       if (status === 404) {
         alert("부스 정보(Booth-ID)가 올바르지 않거나 헤더가 누락되었습니다.");
         return false;
       }
-      console.error("[ORDER_CHECK][POST] AxiosError", status, error.response?.data);
+      console.error(
+        "[ORDER_CHECK][POST] AxiosError",
+        status,
+        error.response?.data
+      );
       return false;
     }
     console.error("[ORDER_CHECK][POST] Unknown error", error);
