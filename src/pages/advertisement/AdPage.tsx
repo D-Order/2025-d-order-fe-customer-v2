@@ -61,7 +61,7 @@ const AdPage = () => {
     try {
       const data = await fetchBoothAds();
       setBooths(data);
-      console.log("data", data);
+      //console.log("data", data);
     } finally {
       setLoading(false);
     }
