@@ -69,8 +69,6 @@ export const ItemDes = styled.div<{ $soldout?: boolean; disabled?: boolean }>`
   overflow: hidden;
   text-overflow: ellipsis;
 
-  word-break: keep-all;
-
   width: 100%;
 `;
 
