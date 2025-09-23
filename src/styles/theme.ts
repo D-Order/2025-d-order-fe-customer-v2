@@ -31,6 +31,8 @@ const colors = {
   // 기타 색상
   White: "#FFFFFF",
   Black: "#000000",
+  Green01: "#0F851A",
+  Gray02: "#8A8A8A",
 };
 
 const theme = {
