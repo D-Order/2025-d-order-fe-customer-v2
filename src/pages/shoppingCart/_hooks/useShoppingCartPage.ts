@@ -43,7 +43,7 @@ const useShoppingCartPage = () => {
       });
       const data = response.data;
       setShoppingItemResponse(data);
-      console.log("장바구니 담은 데이터", data);
+      //console.log("장바구니 담은 데이터", data);
     } catch (err) {
       console.log(err);
     }
