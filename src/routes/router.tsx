@@ -12,7 +12,7 @@ import MenulistPage from "@pages/menulistpage/MenuListPage";
 import ShoppingCartPage from "@pages/shoppingCart/ShoppingCartpage";
 import StaffCodePage from "@pages/staffCode/StaffCodePage";
 import OrderCompletePage from "@pages/staffCode/OrderCompletePage";
-
+import AdPage from "@pages/advertisement/AdPage";
 // GA 추적을 위한 래퍼 컴포넌트
 const LayoutWithAnalytics = ({ children }: { children: React.ReactNode }) => {
   useGoogleAnalytics(); // GA 자동 추적
@@ -34,6 +34,7 @@ const router = createBrowserRouter([
       { path: ROUTE_CONSTANTS.MENULIST, element: <MenulistPage /> },
       { path: ROUTE_CONSTANTS.STAFFCODE, element: <StaffCodePage /> },
       { path: ROUTE_CONSTANTS.ORDERCOMPLETE, element: <OrderCompletePage /> },
+      { path: ROUTE_CONSTANTS.ADVERTISEMENT, element: <AdPage /> },
     ],
   },
 ]);

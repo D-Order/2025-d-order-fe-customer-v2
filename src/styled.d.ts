@@ -21,6 +21,8 @@ declare module "styled-components" {
       // 기타 색상
       White: string;
       Black: string;
+      Green01: string;
+      Gray02: string;
     };
     fonts: {
       // Title
