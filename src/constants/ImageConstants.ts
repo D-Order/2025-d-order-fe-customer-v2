@@ -10,6 +10,11 @@ import backIcon from "@assets/icons/left.svg";
 import CouponIcon from "@assets/icons/Currency.svg";
 import CoponIconPercent from "@assets/icons/currencyPercent.png";
 import Xicon from "@assets/icons/xIcon2.svg";
+import COOPBG from "@assets/images/COOPBG.svg";
+import FEBG from "@assets/images/FEBG.svg";
+import BEBG from "@assets/images/BEBG.svg";
+import PMBG from "@assets/images/PMBG.svg";
+import ToDevPage from "@assets/images/ToDevPage.svg";
 
 export const IMAGE_CONSTANTS = {
   Notice: Notice,
@@ -24,4 +29,11 @@ export const IMAGE_CONSTANTS = {
   COUPONICON: CouponIcon,
   COUPONICONPERCENT: CoponIconPercent,
   XICON: Xicon,
+  
+  // devPage
+  TODEVPAGE : ToDevPage,
+  COOPBackground: COOPBG,
+  FEBackground : FEBG,
+  BEBackground : BEBG,
+  PMBackground : PMBG,
 };

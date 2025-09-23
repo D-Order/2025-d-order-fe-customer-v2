@@ -31,18 +31,27 @@ const OrderCompletePage = () => {
         </S.LottieWrapper>
         <S.Logo />
       </S.LogoWrapper>
-
+      {/* <S.ToDevPageBtn onClick= {() => navigate(ROUTE_CONSTANTS.DEVPAGE)}>
+        <img src={IMAGE_CONSTANTS.TODEVPAGE} alt="개발자 페이지로" />
+      </S.ToDevPageBtn> */}
       <S.BtnWrapper>
-        <S.Btn onClick={() => navigate(ROUTE_CONSTANTS.ORDERLIST)}>
-          주문 내역보기
-        </S.Btn>
-        <S.Btn
-          $moreMenu={true}
-          onClick={() => navigate(ROUTE_CONSTANTS.MENULIST)}
-        >
-          다른 메뉴 더 보기
-        </S.Btn>
+        <S.ToDevPageBtn onClick= {() => navigate(ROUTE_CONSTANTS.DEVPAGE)}>
+          <img src={IMAGE_CONSTANTS.TODEVPAGE} alt="개발자 페이지로" />
+        </S.ToDevPageBtn>
+        <S.Row>
+          <S.Btn onClick={() => navigate(ROUTE_CONSTANTS.ORDERLIST)}>
+            주문 내역보기
+          </S.Btn>
+          <S.Btn
+            $moreMenu={true}
+            onClick={() => navigate(ROUTE_CONSTANTS.MENULIST)}
+          >
+            다른 메뉴 더 보기
+          </S.Btn>
+        </S.Row>
+        
       </S.BtnWrapper>
+      
     </S.Wrapper>
   );
 };

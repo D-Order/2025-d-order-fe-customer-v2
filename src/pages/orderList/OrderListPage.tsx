@@ -61,6 +61,7 @@ const OrderListPage = () => {
 
   return (
     <>
+    <S.Wrapper>
       <S.HeaderWrapper>
         <OrderListHeader
           text="주문내역"
@@ -86,6 +87,8 @@ const OrderListPage = () => {
           )}
         </S.OrderListWrapper>
       </S.PageWrapper>
+    </S.Wrapper>
+      
     </>
   );
 };
