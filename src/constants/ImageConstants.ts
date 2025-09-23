@@ -10,7 +10,9 @@ import backIcon from "@assets/icons/left.svg";
 import CouponIcon from "@assets/icons/Currency.svg";
 import CoponIconPercent from "@assets/icons/currencyPercent.png";
 import Xicon from "@assets/icons/xIcon2.svg";
-
+import BackGround from "@assets/images/background.png";
+import InstaIcon from "@assets/icons/insta.png";
+import Reload from "@assets/icons/reload.svg";
 export const IMAGE_CONSTANTS = {
   Notice: Notice,
   CHARACTER: Character,
@@ -24,4 +26,7 @@ export const IMAGE_CONSTANTS = {
   COUPONICON: CouponIcon,
   COUPONICONPERCENT: CoponIconPercent,
   XICON: Xicon,
+  BACKGROUND: BackGround,
+  INSTAGRAMICON: InstaIcon,
+  RELOAD: Reload,
 };

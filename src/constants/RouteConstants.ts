@@ -7,4 +7,5 @@ export const ROUTE_CONSTANTS = {
   RESERVATION: "/shopping-list",
   STAFFCODE: "/staff-code",
   ORDERCOMPLETE: "/order-complete",
+  ADVERTISEMENT: "/ad",
 };
