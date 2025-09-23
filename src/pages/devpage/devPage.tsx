@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import * as S from "./devPage.styled";
-import DevCard, { Member } from "./components/DevCard"
-import RoleFilter from "./components/RoleFilter";
+import DevCard, { Member } from "./components/devCard"
+import RoleFilter from "./components/roleFilter";
 import { useNavigate } from "react-router-dom";
 import { ROUTE_CONSTANTS } from "@constants/RouteConstants";
 
