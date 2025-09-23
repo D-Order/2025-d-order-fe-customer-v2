@@ -47,6 +47,15 @@ export const LogoWrapper = styled.div`
   margin-top: 20vh;
 `;
 
+export const ToDevPageBtn = styled.button`
+  width: 97%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  img{
+    width: 100%;
+  }
+`;
 export const LottieWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -70,8 +79,11 @@ export const Logo = styled(CharacterLogo)`
   z-index: 1; // 로고를 앞쪽으로 유지
 `;
 
+
 export const BtnWrapper = styled.div`
   display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 25px;
 
   position: absolute;
@@ -81,6 +93,10 @@ export const BtnWrapper = styled.div`
     position: static; // position을 static으로 변경
     margin-top: 300px; // margin-top 추가
   }
+`;
+export const Row = styled.div`
+  display: flex;
+  gap: 25px;
 `;
 export const Btn = styled.button<{ $moreMenu?: boolean }>`
   display: flex;

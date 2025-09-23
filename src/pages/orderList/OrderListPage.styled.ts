@@ -1,5 +1,9 @@
 import styled from "styled-components";
 
+export const Wrapper = styled.div`
+    min-height: calc(var(--vh, 1vh) * 100);
+
+`;
 //for OrderListHeader
 export const Header = styled.header`
     box-sizing: border-box;
