@@ -16,6 +16,9 @@ import BEBG from "@assets/images/BEBG.svg";
 import PMBG from "@assets/images/PMBG.svg";
 import ToDevPage from "@assets/images/ToDevPage.svg";
 
+import BackGround from "@assets/images/background.png";
+import InstaIcon from "@assets/icons/insta.png";
+import Reload from "@assets/icons/reload.svg";
 export const IMAGE_CONSTANTS = {
   Notice: Notice,
   CHARACTER: Character,
@@ -36,4 +39,7 @@ export const IMAGE_CONSTANTS = {
   FEBackground : FEBG,
   BEBackground : BEBG,
   PMBackground : PMBG,
+  BACKGROUND: BackGround,
+  INSTAGRAMICON: InstaIcon,
+  RELOAD: Reload,
 };

@@ -8,4 +8,5 @@ export const ROUTE_CONSTANTS = {
   STAFFCODE: "/staff-code",
   ORDERCOMPLETE: "/order-complete",
   DEVPAGE : "/devpage",
+  ADVERTISEMENT: "/ad",
 };
