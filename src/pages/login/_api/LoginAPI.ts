@@ -46,15 +46,15 @@ export const fetchBoothName = async (boothId: string): Promise<string> => {
     );
 
     if (response.status === 200 && response.data.data) {
-      return response.data.data.booth_name || "부스 이름";
+      return response.data.data.booth_name || "QR코드를 다시 찍어주세요.";
     }
 
-    return "부스 이름";
+    return "QR코드를 다시 찍어주세요.";
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       console.error("부스 이름 조회 실패:", error.response.data);
     }
-    return "부스 이름";
+    return "QR코드를 다시 찍어주세요.";
   }
 };
 

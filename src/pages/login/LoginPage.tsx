@@ -42,10 +42,10 @@ const LoginPage = () => {
           const name = await fetchBoothName(storedBoothId);
           setBoothName(name);
         } else {
-          setBoothName("부스 이름");
+          setBoothName("QR코드를 다시 찍어주세요.");
         }
       } catch (error) {
-        setBoothName("부스 이름");
+        setBoothName("QR코드를 다시 찍어주세요.");
       }
     };
 
