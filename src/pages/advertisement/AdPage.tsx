@@ -120,6 +120,13 @@ const AdPage = () => {
     });
   }, [filteredBooths]);
 
+  const contactBoothsToRender = useMemo(() => {
+    if (selectedDate === "2025-09-26") {
+      return computedBooths.slice(0, 1);
+    }
+    return computedBooths;
+  }, [computedBooths, selectedDate]);
+
   return (
     <Wrapper>
       <F5Wrapper>
@@ -152,7 +159,7 @@ const AdPage = () => {
         <BoothWrapper ref={boothWrapperRef} $blocked={!isSelectedDateActive}>
           <ContactBoothList>
             {!loading &&
-              computedBooths.map((b, idx) => (
+              contactBoothsToRender.map((b, idx) => (
                 <ContactBoothCard
                   key={`${b.hostName}-${idx}`}
                   hostName={b.hostName}
